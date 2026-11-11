@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 480" width="720" height="480" role="img" aria-label="Localisation et environnement du campus ISSCA Business School à Akouda, Sousse">
+  <rect width="720" height="480" rx="20" fill="#0F2347" />
+  <!-- Stylized Map Grid of Akouda / Sousse Coastline -->
+  <g stroke="#1E3A6D" stroke-width="1.5" fill="none">
+    <path d="M 0 90 L 720 90 M 0 180 L 720 180 M 0 270 L 720 270 M 0 360 L 720 360" />
+    <path d="M 120 0 L 120 480 M 260 0 L 260 480 M 400 0 L 400 480 M 540 0 L 540 480" />
+    <!-- Route de Ceinture arterial road -->
+    <path d="M 40 420 Q 250 280 420 210 T 680 80" stroke="#1C4E9E" stroke-width="8" stroke-linecap="round" />
+    <path d="M 40 420 Q 250 280 420 210 T 680 80" stroke="#60A5FA" stroke-width="2" stroke-dasharray="8 8" />
+  </g>
+
+  <!-- Location Pin Marker -->
+  <g transform="translate(360, 210)">
+    <circle cx="0" cy="0" r="46" fill="#D11623" fill-opacity="0.22" />
+    <circle cx="0" cy="0" r="24" fill="#D11623" stroke="#FFFFFF" stroke-width="3" />
+    <circle cx="0" cy="0" r="7" fill="#FFFFFF" />
+  </g>
+
+  <!-- Campus Info Card -->
+  <g transform="translate(44, 286)">
+    <rect width="632" height="150" rx="16" fill="#FFFFFF" />
+    <rect x="24" y="24" width="96" height="26" rx="13" fill="#FEE2E2" />
+    <text x="72" y="41" text-anchor="middle" fill="#D11623" font-family="system-ui, -apple-system, sans-serif" font-size="11" font-weight="700">CAMPUS SOUSSE</text>
+    <text x="24" y="76" fill="#0F2347" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="700">ISSCA Business School — Akouda, Sousse</text>
+    <text x="24" y="102" fill="#475569" font-family="system-ui, -apple-system, sans-serif" font-size="14">Route de ceinture, Zone Industrielle, 4022 Akouda · Sousse, Tunisie</text>
+    <text x="24" y="126" fill="#1C4E9E" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="600">Tél. : (+216) 70 130 190 / (+216) 20 390 039 · contact@issca.tn</text>
+  </g>
+</svg>
