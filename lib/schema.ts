@@ -261,39 +261,20 @@ export function buildOdooOpportunityTitle(data: {
 }
 
 export function buildAdmissionsSummary(data: CandidaturePayload, submissionId: string): string {
-  const isPriority = data.readiness === "pret_avant_28_nov";
   const lines = [
-    `=== PRÉ-CANDIDATURE · ISSCA BUSINESS SCHOOL ===`,
-    `Référence : ${submissionId}`,
-    `Programme : ${PROGRAM_NAME} (${PROGRAM_ID})`,
-    `Campus : ${CAMPUS_NAME}`,
-    `Priorité Clôture 28 nov. : ${
-      isPriority ? "OUI — Prêt(e) à s'inscrire avant le 28/11" : "Standard — Accompagnement requis"
-    }`,
-    ``,
-    `--- CANDIDAT(E) ---`,
-    `Nom complet : ${data.firstName} ${data.lastName}`,
-    `Téléphone : ${normalizePhone(data.phone)} (saisi : ${data.phone})`,
-    `E-mail : ${data.email}`,
-    `Ville : ${data.city}`,
-    ``,
-    `--- PARCOURS ACADÉMIQUE ---`,
-    `Niveau d'études : ${getDegreeLabel(data.degreeLevel)}`,
-    `Spécialité / Filière : ${data.specialization}`,
-    `Établissement d'origine : ${data.institution}`,
-    `Année d'obtention : ${data.graduationYear}`,
-    ``,
-    `--- PROJET & ANNÉE UNIVERSITAIRE ---`,
-    `Année universitaire souhaitée : ${getDesiredIntakeLabel(data.desiredIntake)}`,
-    `Situation actuelle : ${getCurrentSituationLabel(data.currentSituation)}`,
-    `Disponibilité : ${getReadinessLabel(data.readiness)}`,
-    `Objectif / Motivation : ${data.motivation ? data.motivation : "Non renseigné"}`,
-    `Questions / Commentaires : ${data.comments ? data.comments : "Aucun"}`,
-    ``,
-    `--- CONSENTEMENTS & ATTRIBUTION ---`,
-    `Consentement traitement admission : Oui`,
-    `Consentement communications : ${data.marketingConsent ? "Oui" : "Non"}`,
-    `Source UTM : ${data.utmSource || "direct"} / ${data.utmMedium || "none"} / ${
+    `🎓 Nouvelle Pré-candidature — Master Management des Startups et de l'IA (2026/2027) :`,
+    `- Référence : ${submissionId}`,
+    `- Candidat(e) : ${data.firstName} ${data.lastName}`,
+    `- Téléphone : ${normalizePhone(data.phone)} (saisi : ${data.phone})`,
+    `- E-mail : ${data.email}`,
+    `- Ville : ${data.city}`,
+    `- Niveau d'études : ${getDegreeLabel(data.degreeLevel)}`,
+    `- Spécialité / Filière : ${data.specialization}`,
+    `- Établissement d'origine : ${data.institution}`,
+    `- Année du diplôme : ${data.graduationYear}`,
+    `- Situation actuelle : ${getCurrentSituationLabel(data.currentSituation)}`,
+    `- Questions / Remarques : ${data.comments ? data.comments : "Aucune"}`,
+    `- Source UTM : ${data.utmSource || "direct"} / ${data.utmMedium || "none"} / ${
       data.utmCampaign || "none"
     }`,
   ];

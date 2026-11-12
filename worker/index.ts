@@ -402,12 +402,43 @@ async function handleLeadSubmission(request: Request, env: Env): Promise<Respons
   const ipCountry = request.headers.get("CF-IPCountry") || "TN";
   const siteUrl = env.SITE_URL || "https://join.issca.tn";
 
+  const fullName = `${data.firstName} ${data.lastName}`.trim();
+  const degreeLabel = getDegreeLabel(data.degreeLevel);
+  const currentSituationLabel = getCurrentSituationLabel(data.currentSituation);
+
   const webhookPayload: Record<string, unknown> = {
+    ...data,
     submissionId,
     idempotencyKey: data.idempotencyKey,
     eventId: data.eventId,
     timestamp,
+    submittedAt: timestamp,
+    ip: clientIp,
     formVersion: FORM_VERSION,
+    // Flat Cocon-compatible fields for n8n -> Odoo CRM card mapping
+    name: fullName,
+    fullName,
+    parentName: fullName,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    phone: data.phone,
+    phoneNormalized: normalizedPhone,
+    email: data.email,
+    city: data.city,
+    degreeLevel: data.degreeLevel,
+    degreeLabel,
+    specialization: data.specialization,
+    institution: data.institution,
+    graduationYear: data.graduationYear,
+    currentSituation: data.currentSituation,
+    currentSituationLabel,
+    opportunityTitle,
+    comments: data.comments || "",
+    description: admissionsSummary,
+    notes: admissionsSummary,
+    summary: admissionsSummary,
+    leadSummary: admissionsSummary,
+    // Structured nested objects
     program: {
       id: env.PROGRAM_ID || PROGRAM_ID,
       name: PROGRAM_NAME,
@@ -424,15 +455,15 @@ async function handleLeadSubmission(request: Request, env: Env): Promise<Respons
       tags: [
         "Master Startups & IA",
         "join.issca.tn",
-        getDegreeLabel(data.degreeLevel),
-        isPriorityBeforeDeadline ? "Prioritaire 28 Nov" : "À accompagner",
+        degreeLabel,
+        "2026/2027",
       ],
       internalNote: admissionsSummary,
     },
     candidate: {
       firstName: data.firstName,
       lastName: data.lastName,
-      fullName: `${data.firstName} ${data.lastName}`,
+      fullName,
       phoneRaw: data.phone,
       phoneNormalized: normalizedPhone,
       email: data.email,
@@ -440,7 +471,7 @@ async function handleLeadSubmission(request: Request, env: Env): Promise<Respons
     },
     academic: {
       degreeLevel: data.degreeLevel,
-      degreeLabel: getDegreeLabel(data.degreeLevel),
+      degreeLabel,
       specialization: data.specialization,
       institution: data.institution,
       graduationYear: data.graduationYear,
@@ -449,7 +480,7 @@ async function handleLeadSubmission(request: Request, env: Env): Promise<Respons
       desiredIntake: data.desiredIntake,
       desiredIntakeLabel: getDesiredIntakeLabel(data.desiredIntake),
       currentSituation: data.currentSituation,
-      currentSituationLabel: getCurrentSituationLabel(data.currentSituation),
+      currentSituationLabel,
       readiness: data.readiness,
       readinessLabel: getReadinessLabel(data.readiness),
       readyBeforeNov28: isPriorityBeforeDeadline,

@@ -21,6 +21,10 @@
   "vars": {
     "ENVIRONMENT": "production",
     "PROGRAM_ID": "issca-master-startups-ia",
-    "SITE_URL": "https://join.issca.tn"
+    "SITE_URL": "https://join.issca.tn",
+    "N8N_WEBHOOK_URL": "https://ops.truescaling.tn/webhook/issca-inscription",
+    "META_PIXEL_ID": "2467178294109259",
+    "NEXT_PUBLIC_GTM_ID": "GTM-PQRXKB97",
+    "NEXT_PUBLIC_META_PIXEL_ID": "2467178294109259"
   }
 }
