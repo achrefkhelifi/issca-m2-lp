@@ -9,22 +9,28 @@ const ESSENTIAL_FAQS = [
       "Une Licence (Bac+3 ou équivalent) ou un diplôme d’ingénieur. Une admission en 2ème année (M2) est également étudiée pour les titulaires d’un M1 compatible.",
   },
   {
-    id: "niveau-code",
-    question: "Faut-il déjà savoir coder ?",
+    id: "alternance-travail",
+    question: "Est-il possible de suivre ce Master en alternance ou tout en travaillant ?",
     answer:
-      "Non. Ce Master forme des managers et entrepreneurs capables de piloter l’IA et la Data. Les bases algorithmiques sont reprises dès le Semestre 1.",
+      "Oui. Le programme offre la possibilité d’alternance et s’adapte aux candidats déjà en poste ou en mission en entreprise. Lors de l’appel de notre conseiller aux admissions, nous faisons le point sur votre situation professionnelle afin d’organiser votre parcours dans les meilleures conditions.",
+  },
+  {
+    id: "partenariats-internationaux",
+    question: "Quels sont les partenariats et échanges internationaux proposés ?",
+    answer:
+      "ISSCA Business School propose à ses étudiants des partenariats académiques et des opportunités d’échanges avec l’ISIT Paris, le Collège de Paris et Beijing Polytechnic.",
   },
   {
     id: "pieces-maintenant",
     question: "Dois-je fournir mes diplômes aujourd’hui pour candidater ?",
     answer:
-      "Non. La pré-candidature en ligne prend 2 minutes sans aucun fichier à joindre. Le conseiller vous indiquera les pièces à préparer pour votre entretien.",
+      "Non. La pré-candidature en ligne prend 2 minutes sans aucun fichier à joindre. Un conseiller vous rappellera pour vous accompagner dans la constitution de votre dossier.",
   },
   {
     id: "date-limite",
-    question: "Jusqu’à quand les inscriptions sont-elles ouvertes ?",
+    question: "Quelle est la date finale d’inscription ?",
     answer:
-      "La clôture des inscriptions est fixée au 28 novembre 2026. Déposez votre pré-candidature dès maintenant pour planifier votre entretien à temps.",
+      "Pour l’année universitaire 2026/2027 en cours, le dernier délai d’inscription est fixé au 28 novembre. Déposez votre pré-candidature dès maintenant pour qu’un conseiller vous rappelle rapidement.",
   },
 ] as const;
 

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { getDeadlineStatus, type DeadlineStatus } from "@/lib/deadline";
+import { formatFrench } from "@/lib/typography";
 
 export function DeadlineBanner() {
   const [status, setStatus] = useState<DeadlineStatus>(() => getDeadlineStatus());
@@ -12,36 +13,38 @@ export function DeadlineBanner() {
   }, []);
 
   return (
-    <div
-      role="region"
+    <aside
       aria-label="Date limite des inscriptions"
-      className={
-        status.isExpired
-          ? "bg-issca-navy text-white border-b border-slate-700"
-          : "bg-issca-red text-white"
-      }
+      className="bg-issca-navy text-white border-b border-white/10 py-2 px-3 text-center relative z-50"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2 text-xs sm:text-sm flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2 font-medium">
-          <span
-            aria-hidden="true"
-            className="inline-block h-2 w-2 rounded-full bg-white animate-pulse"
-          />
-          <span>{status.bannerText}</span>
-          {status.countdownChipText && (
-            <span className="inline-flex items-center rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-bold tracking-wide text-white">
-              {status.countdownChipText}
-            </span>
-          )}
-        </div>
-        <Link
-          href="/candidature"
-          className="inline-flex items-center gap-1 font-bold underline underline-offset-4 hover:text-slate-100 whitespace-nowrap"
-        >
-          <span>{status.isExpired ? "Contacter les admissions" : "Déposer ma pré-candidature"}</span>
+      <Link
+        href="/candidature"
+        className="mx-auto max-w-[1200px] inline-flex items-center justify-center gap-2 sm:gap-2.5 text-xs sm:text-[0.84rem] leading-tight group"
+      >
+        <span className="inline-flex items-center rounded-full bg-issca-red px-2 py-0.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-white shrink-0">
+          {status.academicYear}
+        </span>
+
+        {/* Short mobile text so it always stays on 1 clean line */}
+        <span className="font-medium text-white/95 sm:hidden">
+          {status.isExpired
+            ? "Inscriptions clôturées"
+            : formatFrench("Dernier délai d’inscription : 28 nov.")}
+        </span>
+
+        {/* Full desktop text */}
+        <span className="hidden sm:inline font-medium text-white/95">
+          {formatFrench(status.bannerText)}
+        </span>
+
+        <span className="inline-flex items-center gap-0.5 font-bold text-red-300 underline underline-offset-2 group-hover:text-white transition-colors shrink-0">
+          <span className="sm:hidden">Candidater</span>
+          <span className="hidden sm:inline">
+            {status.isExpired ? "Nous contacter" : "Déposer ma candidature"}
+          </span>
           <span aria-hidden="true">→</span>
-        </Link>
-      </div>
-    </div>
+        </span>
+      </Link>
+    </aside>
   );
 }

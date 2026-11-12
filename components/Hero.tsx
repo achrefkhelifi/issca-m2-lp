@@ -8,8 +8,9 @@ import { trackCtaClick } from "@/lib/analytics";
 
 const HERO_PILLS = [
   "Accessible dès Bac+3 (Licence / Ingénieur)",
-  "Aucun prérequis en code",
+  "Possibilité d’alternance",
   "Stage de 4 à 6 mois en M2",
+  "Partenariats & échanges : ISIT Paris, Collège de Paris & Beijing Polytechnic",
   "Agrément MESRS n° 01/2018",
 ] as const;
 
@@ -49,7 +50,7 @@ export function Hero() {
                 {formatFrench("Master Management des Startups et de l’Intelligence Artificielle.")}
               </strong>{" "}
               {formatFrench(
-                "Deux ans à ISSCA Business School pour apprendre à lancer un produit, piloter des projets IA et diriger des équipes agiles — sans être ingénieur informaticien."
+                "Deux ans à ISSCA Business School pour apprendre à lancer un produit, piloter des projets IA et diriger des équipes innovantes."
               )}
             </p>
 
@@ -72,7 +73,7 @@ export function Hero() {
               </a>
             </div>
 
-            {/* 4 Cocon-style Checkmark Fact Pills */}
+            {/* Cocon-style Checkmark Fact Pills */}
             <div className="mt-9 flex flex-wrap gap-2.5">
               {HERO_PILLS.map((pill) => (
                 <span

@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { TUITION_AND_ADMISSIONS_CONFIG } from "@/content/program";
+// import { TUITION_AND_ADMISSIONS_CONFIG } from "@/content/program";
 import { formatFrench } from "@/lib/typography";
 
 const SIMPLE_STEPS = [
@@ -14,11 +14,11 @@ const SIMPLE_STEPS = [
   },
   {
     step: "Étape 2",
-    title: "Appel & étude du dossier",
+    title: "Appel d’un conseiller",
     badge: "Sous 24h–48h",
     featured: false,
     description:
-      "Suite à votre formulaire, un conseiller aux admissions vous rappelle pour vérifier votre éligibilité et fixer votre entretien.",
+      "Suite à votre formulaire, un conseiller aux admissions vous rappelle pour répondre à vos questions et valider votre dossier.",
   },
   {
     step: "Étape 3",
@@ -26,7 +26,7 @@ const SIMPLE_STEPS = [
     badge: "Jusqu’au 28 novembre",
     featured: false,
     description:
-      "Après validation par la commission, vous déposez vos pièces et réglez la 1ère tranche pour confirmer votre place.",
+      "Vous transmettez vos pièces justificatives et finalisez votre inscription administrative pour rejoindre la promotion.",
   },
 ] as const;
 
@@ -50,7 +50,7 @@ export function TuitionAndAdmissions() {
           </h2>
           <p className="mt-3 text-base sm:text-lg text-slate-600">
             {formatFrench(
-              "Inscriptions ouvertes jusqu’au 28 novembre. Tout commence par le formulaire en ligne afin qu’un conseiller étudie votre profil."
+              "Dernier délai d’inscription : 28 novembre. Tout commence par le formulaire en ligne afin qu’un conseiller vous rappelle."
             )}
           </p>
         </div>
@@ -105,7 +105,7 @@ export function TuitionAndAdmissions() {
           ))}
         </div>
 
-        {/* Cocon-style Single Compact Tuition Strip */}
+        {/* Frais d’études & facilités strip (Commented out for now — uncomment if needed later)
         <div className="mt-8 rounded-2xl bg-issca-surface border border-slate-200/90 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
             <span className="w-8 h-8 rounded-full bg-issca-blue text-white flex items-center justify-center flex-none font-bold text-sm">
@@ -124,6 +124,7 @@ export function TuitionAndAdmissions() {
             {formatFrench("3 tranches disponibles")}
           </span>
         </div>
+        */}
       </div>
     </section>
   );

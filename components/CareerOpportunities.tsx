@@ -44,7 +44,7 @@ export function CareerOpportunities() {
           {CAREER_PILLS.map((role) => (
             <Link
               key={role.label}
-              href="/candidature"
+              href={`/candidature?objectif=${encodeURIComponent(role.label)}`}
               className="inline-flex items-center gap-2.5 rounded-full bg-issca-surface border border-slate-200/90 py-2.5 pl-3.5 pr-5 text-sm sm:text-base font-bold text-issca-navy hover:border-issca-red hover:-translate-y-0.5 transition-all shadow-2xs"
             >
               <span className="inline-flex items-center rounded-full bg-white border border-slate-200 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-issca-blue">

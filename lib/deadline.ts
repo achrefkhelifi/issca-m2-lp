@@ -138,13 +138,6 @@ export function getDeadlineStatus(referenceDate?: Date): DeadlineStatus {
     urgencyLevel = "closing_soon";
   }
 
-  const countdownChipText =
-    daysRemaining === 0
-      ? "Dernier jour"
-      : daysRemaining === 1
-      ? "J-1"
-      : `J-${daysRemaining}`;
-
   return {
     deadlineIso: REGISTRATION_DEADLINE_ISO,
     deadlineLabel: REGISTRATION_DEADLINE_LABEL,
@@ -154,10 +147,10 @@ export function getDeadlineStatus(referenceDate?: Date): DeadlineStatus {
     isExpired: false,
     daysRemaining,
     urgencyLevel,
-    bannerText: `Année universitaire ${ACADEMIC_YEAR_LABEL} — Inscriptions ouvertes jusqu’au ${REGISTRATION_DEADLINE_LABEL}`,
-    badgeText: `Année universitaire ${ACADEMIC_YEAR_LABEL} · Inscriptions ouvertes jusqu’au ${REGISTRATION_DEADLINE_LABEL}`,
-    countdownChipText,
+    bannerText: `Année universitaire ${ACADEMIC_YEAR_LABEL} — Dernier délai d’inscription\u202F: ${REGISTRATION_DEADLINE_LABEL}`,
+    badgeText: `Année universitaire ${ACADEMIC_YEAR_LABEL} · Dernier délai d’inscription\u202F: ${REGISTRATION_DEADLINE_LABEL}`,
+    countdownChipText: null,
     primaryCtaLabel: "Démarrer ma candidature",
-    funnelSubtext: `Année universitaire ${ACADEMIC_YEAR_LABEL} — Inscriptions ouvertes jusqu’au ${REGISTRATION_DEADLINE_LABEL}. Déposez votre pré-candidature en 2\u00A0minutes.`,
+    funnelSubtext: `Année universitaire ${ACADEMIC_YEAR_LABEL} — Dernier délai d’inscription le ${REGISTRATION_DEADLINE_LABEL}. Déposez votre pré-candidature en 2\u00A0minutes.`,
   };
 }

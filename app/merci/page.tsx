@@ -32,34 +32,33 @@ const ADMISSION_STATUS_STAGES = [
   },
   {
     step: 2,
-    title: "Dossier en cours d’étude",
+    title: "Appel d’un conseiller",
     statusLabel: "Prochaine étape",
     state: "active" as const,
     description:
-      "Un conseiller aux admissions vous contacte par téléphone ou WhatsApp pour vérifier vos pièces académiques et planifier votre entretien.",
+      "Un conseiller aux admissions vous rappelle sous 24h à 48h pour répondre à vos questions et faire le point sur votre dossier.",
   },
   {
     step: 3,
-    title: "Admission acceptée",
-    statusLabel: "Après entretien",
+    title: "Validation du dossier",
+    statusLabel: "Par la commission",
     state: "upcoming" as const,
     description:
-      "La commission pédagogique statue sur votre éligibilité à l’issue de l’étude de votre dossier et de votre entretien.",
+      "Validation de vos pièces académiques par l’équipe pédagogique du Master.",
   },
   {
     step: 4,
     title: "Inscription confirmée",
-    statusLabel: "Avant le 28 nov. 2026",
+    statusLabel: "Avant le 28 novembre",
     state: "upcoming" as const,
     description:
-      "Dépôt définitif du dossier administratif et règlement de la 1ère tranche avant la clôture officielle du 28 novembre 2026.",
+      "Dépôt définitif du dossier administratif avant la date finale d’inscription du 28 novembre.",
   },
 ];
 
 export default function MerciPage() {
-  // Important: WhatsApp message does NOT expose personal data in URL query parameters
   const whatsappConfirmationUrl = buildAdmissionsWhatsAppUrl(
-    "Bonjour ISSCA Business School, je viens d'envoyer ma pré-candidature sur join.issca.tn pour le Master Management des Startups et de l'IA et je souhaite connaître les modalités pour mon entretien."
+    "Bonjour ISSCA Business School, je viens d'envoyer ma pré-candidature sur join.issca.tn pour le Master Management des Startups et de l'IA (année universitaire 2026/2027)."
   );
 
   return (
@@ -102,18 +101,6 @@ export default function MerciPage() {
                 "Votre demande pour le Master Professionnel en Management des Startups et de l’Intelligence Artificielle a été transmise à l’équipe des admissions d’ISSCA Business School à Sousse."
               )}
             </p>
-
-            {/* Clear Distinction between Pre-application and Final Enrollment */}
-            <div className="mt-6 rounded-xl bg-blue-50/80 border border-blue-200 p-4 text-xs sm:text-sm text-slate-800">
-              <p className="font-bold text-issca-navy">
-                Distinction importante : Pré-candidature vs Inscription définitive
-              </p>
-              <p className="mt-1 leading-relaxed">
-                {formatFrench(
-                  "Cette pré-candidature ouvre votre dossier d’admission. Votre inscription définitive sera confirmée après étude de vos pièces académiques, validation de votre entretien et finalisation administrative avant la date limite du 28 novembre 2026."
-                )}
-              </p>
-            </div>
 
             {/* 4-Stage Admission Progress Tracker */}
             <div className="mt-8">
@@ -171,11 +158,11 @@ export default function MerciPage() {
             {/* Left: Prepare Your Dossier */}
             <div className="md:col-span-7 rounded-2xl bg-white border border-slate-200 p-6 sm:p-8 shadow-sm">
               <h2 className="heading-card font-extrabold text-issca-navy">
-                {formatFrench("Préparez dès maintenant vos pièces justificatives")}
+                {formatFrench("Pièces à préparer pour votre dossier")}
               </h2>
               <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
                 {formatFrench(
-                  "Pour accélérer le traitement de votre dossier avant la clôture du 28 novembre 2026, nous vous invitons à rassembler les pièces suivantes en vue de votre entretien :"
+                  "Pour accélérer votre inscription avant le dernier délai du 28 novembre, vous pouvez préparer les pièces suivantes :"
                 )}
               </p>
               <ul className="mt-4 space-y-2.5">
@@ -207,11 +194,11 @@ export default function MerciPage() {
                   Contact Direct Admissions
                 </p>
                 <h2 className="mt-2 text-lg sm:text-xl font-extrabold text-white">
-                  {formatFrench("Vous souhaitez accélérer la prise de rendez-vous ?")}
+                  {formatFrench("Une question urgente ?")}
                 </h2>
                 <p className="mt-2 text-xs sm:text-sm text-slate-200 leading-relaxed">
                   {formatFrench(
-                    "Vous pouvez contacter directement le service des admissions d’ISSCA Business School sur WhatsApp ou par téléphone."
+                    "Vous pouvez également joindre directement le service des admissions sur WhatsApp ou par téléphone."
                   )}
                 </p>
 
@@ -220,14 +207,14 @@ export default function MerciPage() {
                     href={whatsappConfirmationUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn-primary-red w-full text-center text-sm"
+                    className="btn-primary-red rounded-full w-full text-center text-sm"
                   >
                     <span>Écrire aux admissions sur WhatsApp</span>
                     <span aria-hidden="true">↗</span>
                   </a>
                   <a
                     href={`tel:${ISSCA_INSTITUTION.phoneAdmissionsTel}`}
-                    className="inline-flex min-h-[48px] w-full items-center justify-center rounded-lg border border-white/25 bg-white/10 px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-white/15"
+                    className="inline-flex min-h-[48px] w-full items-center justify-center rounded-full border border-white/25 bg-white/10 px-4 py-2.5 text-xs sm:text-sm font-bold text-white hover:bg-white/15"
                   >
                     Appeler le {ISSCA_INSTITUTION.phoneAdmissionsDisplay}
                   </a>

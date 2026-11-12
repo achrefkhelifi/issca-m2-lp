@@ -12,30 +12,24 @@ export const DEGREE_LEVEL_OPTIONS = [
     value: "licence_bac3",
     label: "Licence / Bac+3",
     shortLabel: "Licence (Bac+3)",
-    description: "Diplôme de Licence fondamentale ou appliquée (LMD) ou équivalent Bac+3.",
-  },
-  {
-    value: "master_m1",
-    label: "Master 1 / Bac+4",
-    shortLabel: "Master 1 / Bac+4",
-    description: "Première année de Master validée ou maîtrise (Bac+4).",
+    description: "Licence fondamentale ou appliquée (LMD) ou équivalent Bac+3.",
   },
   {
     value: "ingenieur",
     label: "Diplôme d’ingénieur / Bac+5",
     shortLabel: "Ingénieur / Bac+5",
-    description: "Ingénieur ou diplômé(e) Bac+5 souhaitant acquérir une double compétence Management & IA.",
+    description: "Ingénieur ou diplômé(e) Bac+5.",
   },
   {
     value: "autre",
-    label: "Autre diplôme (équivalence à étudier)",
+    label: "Autre diplôme",
     shortLabel: "Autre diplôme",
-    description: "Parcours spécifique soumis à l’appréciation de la commission d’admission d’ISSCA.",
+    description: "Équivalence étudiée par les admissions.",
   },
 ] as const;
 
 export const GRADUATION_YEAR_OPTIONS = [
-  "2026 (en cours d’obtention)",
+  "2026",
   "2025",
   "2024",
   "2023",
@@ -45,18 +39,18 @@ export const GRADUATION_YEAR_OPTIONS = [
 export const DESIRED_INTAKE_OPTIONS = [
   {
     value: "session_nov_2026",
-    label: "Année universitaire 2026/2027 (inscriptions jusqu’au 28 novembre)",
-    description: "Rejoindre la promotion 2026/2027 avant la clôture des inscriptions du 28 novembre.",
+    label: "Année universitaire 2026/2027",
+    description: "Année universitaire 2026/2027.",
   },
   {
     value: "prochaine_rentree",
     label: "Année universitaire suivante (2027/2028)",
-    description: "Préparer mon dossier en avance pour la prochaine rentrée universitaire.",
+    description: "Année universitaire 2027/2028.",
   },
   {
     value: "besoin_conseil",
-    label: "Je souhaite d’abord échanger avec les admissions",
-    description: "Obtenir des précisions sur le programme ou les modalités avant de confirmer.",
+    label: "Besoin de conseil",
+    description: "Échanger avec un conseiller aux admissions.",
   },
 ] as const;
 
@@ -82,18 +76,18 @@ export const CURRENT_SITUATION_OPTIONS = [
 export const READINESS_OPTIONS = [
   {
     value: "pret_avant_28_nov",
-    label: "Prêt(e) à finaliser mon inscription avant le 28 novembre",
-    badge: "Traitement prioritaire",
+    label: "Inscription 2026/2027",
+    badge: "2026/2027",
   },
   {
     value: "besoin_informations_frais_programme",
-    label: "Intéressé(e), j’ai besoin de précisions (programme, frais ou pièces du dossier)",
-    badge: "Accompagnement conseiller",
+    label: "Besoin d’informations complémentaires",
+    badge: "Conseiller",
   },
   {
     value: "comparaison_orientation",
-    label: "En phase de réflexion et d’orientation académique",
-    badge: "Entretien d’orientation",
+    label: "En réflexion",
+    badge: "Orientation",
   },
 ] as const;
 
@@ -124,7 +118,7 @@ export function isValidPhone(raw: string): boolean {
 }
 
 export const step1Schema = z.object({
-  degreeLevel: z.enum(["licence_bac3", "master_m1", "ingenieur", "autre"], {
+  degreeLevel: z.enum(["licence_bac3", "ingenieur", "autre"], {
     message: "Veuillez sélectionner votre niveau d’études actuel.",
   }),
   specialization: z
@@ -145,25 +139,24 @@ export const step1Schema = z.object({
 });
 
 export const step2Schema = z.object({
-  desiredIntake: z.enum(["session_nov_2026", "prochaine_rentree", "besoin_conseil"], {
-    message: "Veuillez indiquer l’année universitaire souhaitée.",
-  }),
+  desiredIntake: z
+    .enum(["session_nov_2026", "prochaine_rentree", "besoin_conseil"])
+    .optional()
+    .default("session_nov_2026"),
   currentSituation: z.enum(
     ["etudiant_jeune_diplome", "salarie_en_poste", "porteur_projet_startup", "en_transition"],
     {
       message: "Veuillez sélectionner votre situation actuelle.",
     }
   ),
-  readiness: z.enum(
-    [
+  readiness: z
+    .enum([
       "pret_avant_28_nov",
       "besoin_informations_frais_programme",
       "comparaison_orientation",
-    ],
-    {
-      message: "Veuillez préciser votre disponibilité pour finaliser le dossier.",
-    }
-  ),
+    ])
+    .optional()
+    .default("pret_avant_28_nov"),
   motivation: z
     .string()
     .trim()

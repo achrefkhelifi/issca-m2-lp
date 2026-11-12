@@ -16,27 +16,27 @@ const COMMITMENTS = [
   },
   {
     number: "03",
-    title: "Immersion en entreprise",
+    title: "Alternance & stage de 4 à 6 mois",
     description:
-      "Stage obligatoire de 4 à 6 mois en Master 2, avec accompagnement vers notre réseau d’entreprises partenaires.",
+      "Possibilité d’alternance et stage obligatoire en Master 2 avec notre réseau d’entreprises partenaires.",
   },
   {
     number: "04",
+    title: "Partenariats internationaux",
+    description:
+      "Partenariats et opportunités d’échanges avec l’ISIT Paris, le Collège de Paris et Beijing Polytechnic.",
+  },
+  {
+    number: "05",
     title: "Établissement agréé par l’État",
     description:
       "ISSCA Business School est autorisé par le Ministère de l’Enseignement Supérieur sous l’Agrément n° 01/2018.",
   },
   {
-    number: "05",
-    title: "Campus à taille humaine à Sousse",
-    description:
-      "Un environnement moderne à Akouda (Sousse) où chaque étudiant bénéficie d’un suivi personnalisé.",
-  },
-  {
     number: "06",
-    title: "Ouvert dès Bac+3, sans code",
+    title: "Un accompagnement personnalisé",
     description:
-      "Accessible après une Licence ou un diplôme d’ingénieur, avec remise à niveau algorithmique dès le Semestre 1.",
+      "À ISSCA, profitez d’un environnement d’apprentissage favorisant la proximité avec les enseignants et un suivi individualisé.",
   },
 ] as const;
 

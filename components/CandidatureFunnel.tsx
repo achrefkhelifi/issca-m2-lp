@@ -6,13 +6,9 @@ import Link from "next/link";
 import {
   CURRENT_SITUATION_OPTIONS,
   DEGREE_LEVEL_OPTIONS,
-  DESIRED_INTAKE_OPTIONS,
   getCurrentSituationLabel,
   getDegreeLabel,
-  getDesiredIntakeLabel,
-  getReadinessLabel,
   GRADUATION_YEAR_OPTIONS,
-  READINESS_OPTIONS,
   step1Schema,
   step2Schema,
   step3Schema,
@@ -30,7 +26,6 @@ import {
   trackFormStart,
   trackFormStep,
 } from "@/lib/analytics";
-import { getDeadlineStatus, type DeadlineStatus } from "@/lib/deadline";
 import { buildAdmissionsWhatsAppUrl, ISSCA_INSTITUTION } from "@/content/program";
 import { formatFrench } from "@/lib/typography";
 
@@ -43,7 +38,7 @@ interface FormState {
   graduationYear: string;
   desiredIntake: DesiredIntakeValue;
   currentSituation: CurrentSituationValue | "";
-  readiness: ReadinessValue | "";
+  readiness: ReadinessValue;
   motivation: string;
   firstName: string;
   lastName: string;
@@ -59,26 +54,25 @@ interface FormState {
 const STEP_TITLES: Record<FunnelStep, { label: string; subtitle: string }> = {
   1: {
     label: "1. Parcours académique",
-    subtitle: "Vérifions l’adéquation de votre diplôme avec les prérequis du Master.",
+    subtitle: "Indiquez votre diplôme actuel et votre établissement d’origine.",
   },
   2: {
-    label: "2. Projet & disponibilité",
-    subtitle: "Précisez votre objectif et votre calendrier en vue de la clôture du 28 novembre 2026.",
+    label: "2. Situation actuelle",
+    subtitle: "Précisez votre profil actuel.",
   },
   3: {
-    label: "3. Coordonnées personnelles",
+    label: "3. Vos coordonnées",
     subtitle: "Indiquez comment un conseiller aux admissions d’ISSCA peut vous joindre.",
   },
   4: {
     label: "4. Vérification & envoi",
-    subtitle: "Relisez votre récapitulatif avant d’envoyer votre pré-candidature.",
+    subtitle: "Vérifiez vos informations avant d’envoyer votre pré-candidature.",
   },
 };
 
 export function CandidatureFunnel() {
   const router = useRouter();
   const [step, setStep] = useState<FunnelStep>(1);
-  const [deadline, setDeadline] = useState<DeadlineStatus>(() => getDeadlineStatus());
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<{
@@ -94,10 +88,10 @@ export function CandidatureFunnel() {
     degreeLevel: "",
     specialization: "",
     institution: "",
-    graduationYear: "2026 (en cours d’obtention)",
+    graduationYear: "2026",
     desiredIntake: "session_nov_2026",
     currentSituation: "",
-    readiness: "",
+    readiness: "pret_avant_28_nov",
     motivation: "",
     firstName: "",
     lastName: "",
@@ -111,12 +105,22 @@ export function CandidatureFunnel() {
   });
 
   useEffect(() => {
-    setDeadline(getDeadlineStatus());
     if (!idempotencyKeyRef.current) {
       idempotencyKeyRef.current = generateEventId("idem");
     }
     if (!eventIdRef.current) {
       eventIdRef.current = generateEventId("lead");
+    }
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const objectif = params.get("objectif");
+      if (objectif) {
+        setForm((prev) =>
+          prev.motivation ? prev : { ...prev, motivation: objectif }
+        );
+      }
+    } catch {
+      // ignore URLSearchParams errors
     }
   }, []);
 
@@ -145,12 +149,7 @@ export function CandidatureFunnel() {
       fieldName === "graduationYear"
     ) {
       schemaToUse = step1Schema;
-    } else if (
-      fieldName === "desiredIntake" ||
-      fieldName === "currentSituation" ||
-      fieldName === "readiness" ||
-      fieldName === "motivation"
-    ) {
+    } else if (fieldName === "currentSituation") {
       schemaToUse = step2Schema;
     } else if (
       fieldName === "firstName" ||
@@ -200,7 +199,7 @@ export function CandidatureFunnel() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       setTimeout(() => stepHeadingRef.current?.focus(), 60);
     } else if (step === 2 && validateStep(2)) {
-      trackFormStep(2, "Projet et disponibilité");
+      trackFormStep(2, "Situation actuelle");
       setStep(3);
       window.scrollTo({ top: 0, behavior: "smooth" });
       setTimeout(() => stepHeadingRef.current?.focus(), 60);
@@ -225,7 +224,6 @@ export function CandidatureFunnel() {
     e.preventDefault();
     if (isSubmitting) return;
 
-    // Validate all 3 steps before POST
     if (!validateStep(1)) {
       setStep(1);
       return;
@@ -252,7 +250,7 @@ export function CandidatureFunnel() {
       graduationYear: form.graduationYear,
       desiredIntake: form.desiredIntake,
       currentSituation: form.currentSituation as CurrentSituationValue,
-      readiness: form.readiness as ReadinessValue,
+      readiness: form.readiness,
       motivation: form.motivation.trim(),
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
@@ -379,37 +377,18 @@ export function CandidatureFunnel() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl">
-      {/* Top Deadline & Program Context Card */}
-      <div className="rounded-2xl bg-issca-navy text-white p-5 sm:p-6 mb-6 shadow-sm">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-white/10 px-2.5 py-1 text-xs font-bold text-red-300">
-            <span aria-hidden="true" className="h-2 w-2 rounded-full bg-issca-red" />
-            <span>{deadline.badgeText}</span>
-          </span>
-          {deadline.countdownChipText && (
-            <span className="text-xs font-bold text-blue-200">
-              {deadline.countdownChipText}
-            </span>
-          )}
-        </div>
-        <h1
-          id="main-heading"
-          tabIndex={-1}
-          className="mt-3 text-xl sm:text-2xl font-extrabold text-white focus:outline-none"
-        >
-          {formatFrench(
-            "Pré-candidature — Master Management des Startups et de l’IA"
-          )}
-        </h1>
-        <p className="mt-1.5 text-xs sm:text-sm text-slate-200 leading-relaxed">
-          {formatFrench(deadline.funnelSubtext)}
-        </p>
-      </div>
-
-      {/* Progress Bar & Stepper Header */}
+    <div className="mx-auto max-w-2xl">
+      {/* Main Form Card */}
       <div className="rounded-2xl bg-white border border-slate-200 p-5 sm:p-8 shadow-card">
         <div className="mb-6">
+          <h1
+            id="main-heading"
+            tabIndex={-1}
+            className="text-xl sm:text-2xl font-extrabold text-issca-navy focus:outline-none mb-4"
+          >
+            {formatFrench("Pré-candidature — Master Startups & IA")}
+          </h1>
+
           <div className="flex items-center justify-between gap-2 mb-2">
             <span
               id="progress-step-label"
@@ -417,8 +396,8 @@ export function CandidatureFunnel() {
             >
               Étape {step} sur 4 — {STEP_TITLES[step].label.slice(3)}
             </span>
-            <span className="text-xs font-bold text-slate-600">
-              {step * 25}&nbsp;% complété
+            <span className="text-xs font-bold text-slate-500">
+              {step * 25}&nbsp;%
             </span>
           </div>
           <progress
@@ -427,29 +406,6 @@ export function CandidatureFunnel() {
             max={4}
             aria-labelledby="progress-step-label"
           />
-
-          {/* Step Pills */}
-          <ol className="mt-4 grid grid-cols-4 gap-2 text-xs">
-            {([1, 2, 3, 4] as FunnelStep[]).map((s) => {
-              const isCurrent = s === step;
-              const isCompleted = s < step;
-              return (
-                <li
-                  key={s}
-                  className={`rounded-lg px-2.5 py-1.5 font-semibold truncate border ${
-                    isCurrent
-                      ? "bg-blue-50 border-issca-blue text-issca-navy"
-                      : isCompleted
-                      ? "bg-emerald-50/70 border-emerald-200 text-emerald-900"
-                      : "bg-slate-50 border-slate-200 text-slate-500"
-                  }`}
-                >
-                  <span className="hidden sm:inline">{STEP_TITLES[s].label}</span>
-                  <span className="sm:hidden">Étape {s}</span>
-                </li>
-              );
-            })}
-          </ol>
         </div>
 
         <form onSubmit={handleFinalSubmit} noValidate>
@@ -471,11 +427,11 @@ export function CandidatureFunnel() {
             <h2
               ref={stepHeadingRef}
               tabIndex={-1}
-              className="text-lg sm:text-xl font-extrabold text-issca-navy focus:outline-none"
+              className="text-base sm:text-lg font-extrabold text-issca-navy focus:outline-none"
             >
               {formatFrench(STEP_TITLES[step].label)}
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-600">
+            <p className="mt-0.5 text-xs sm:text-sm text-slate-600">
               {formatFrench(STEP_TITLES[step].subtitle)}
             </p>
           </div>
@@ -483,21 +439,21 @@ export function CandidatureFunnel() {
           {/* STEP 1: ACADEMIC ELIGIBILITY */}
           {step === 1 && (
             <div className="space-y-6">
-              {/* Degree Level Radio Cards (<fieldset> + <legend> for 4 mutually exclusive options) */}
+              {/* Degree Level Radio Cards (3 options) */}
               <fieldset
                 aria-describedby={errors.degreeLevel ? "degreeLevel-error" : undefined}
               >
                 <legend className="text-sm sm:text-base font-bold text-issca-navy">
-                  Quel est votre niveau d’études actuel (ou dernier diplôme obtenu)&nbsp;?{" "}
+                  Niveau d’études actuel (ou dernier diplôme obtenu){" "}
                   <span className="text-issca-red">*</span>
                 </legend>
-                <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {DEGREE_LEVEL_OPTIONS.map((option) => {
                     const checked = form.degreeLevel === option.value;
                     return (
                       <label
                         key={option.value}
-                        className={`cursor-pointer rounded-xl border p-4 flex items-start gap-3 transition-colors ${
+                        className={`cursor-pointer rounded-xl border p-3.5 flex items-start gap-2.5 transition-colors ${
                           checked
                             ? "border-issca-blue bg-blue-50/60 ring-2 ring-issca-blue/20"
                             : "border-slate-300 bg-white hover:bg-slate-50"
@@ -509,13 +465,13 @@ export function CandidatureFunnel() {
                           value={option.value}
                           checked={checked}
                           onChange={() => updateField("degreeLevel", option.value)}
-                          className="mt-1 h-4 w-4 text-issca-blue focus:ring-issca-blue"
+                          className="mt-1 h-4 w-4 text-issca-blue focus:ring-issca-blue shrink-0"
                         />
                         <div>
                           <span className="block text-sm font-bold text-issca-navy">
                             {formatFrench(option.label)}
                           </span>
-                          <span className="mt-1 block text-xs text-slate-600 leading-relaxed">
+                          <span className="mt-0.5 block text-xs text-slate-500 leading-snug">
                             {formatFrench(option.description)}
                           </span>
                         </div>
@@ -526,42 +482,67 @@ export function CandidatureFunnel() {
                 {renderFieldError("degreeLevel")}
               </fieldset>
 
-              {/* Specialization Input */}
-              <div>
-                <label
-                  htmlFor="specialization"
-                  className="block text-sm sm:text-base font-bold text-issca-navy mb-1.5"
-                >
-                  Spécialité ou filière d’études <span className="text-issca-red">*</span>
-                </label>
-                <p id="specialization-hint" className="text-xs text-slate-600 mb-2">
-                  Ex.&nbsp;: Gestion, Marketing, Informatique de gestion, Génie logiciel, Économie, Finance...
-                </p>
-                <input
-                  id="specialization"
-                  name="specialization"
-                  type="text"
-                  required
-                  value={form.specialization}
-                  onChange={(e) => updateField("specialization", e.target.value)}
-                  onBlur={() => validateSingleField("specialization")}
-                  aria-invalid={Boolean(errors.specialization)}
-                  aria-describedby={
-                    errors.specialization
-                      ? "specialization-hint specialization-error"
-                      : "specialization-hint"
-                  }
-                  placeholder="Votre spécialité actuelle ou de diplôme"
-                  className="form-input-field"
-                />
-                {renderFieldError("specialization")}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Specialization Input */}
+                <div>
+                  <label
+                    htmlFor="specialization"
+                    className="block text-sm font-bold text-issca-navy mb-1.5"
+                  >
+                    Spécialité ou filière <span className="text-issca-red">*</span>
+                  </label>
+                  <input
+                    id="specialization"
+                    name="specialization"
+                    type="text"
+                    required
+                    value={form.specialization}
+                    onChange={(e) => updateField("specialization", e.target.value)}
+                    onBlur={() => validateSingleField("specialization")}
+                    aria-invalid={Boolean(errors.specialization)}
+                    aria-describedby={
+                      errors.specialization ? "specialization-error" : undefined
+                    }
+                    placeholder="Ex. : Gestion, Informatique, Finance..."
+                    className="form-input-field"
+                  />
+                  {renderFieldError("specialization")}
+                </div>
+
+                {/* Graduation Year Select Dropdown */}
+                <div>
+                  <label
+                    htmlFor="graduationYear"
+                    className="block text-sm font-bold text-issca-navy mb-1.5"
+                  >
+                    Année du diplôme <span className="text-issca-red">*</span>
+                  </label>
+                  <select
+                    id="graduationYear"
+                    name="graduationYear"
+                    value={form.graduationYear}
+                    onChange={(e) => updateField("graduationYear", e.target.value)}
+                    aria-invalid={Boolean(errors.graduationYear)}
+                    aria-describedby={
+                      errors.graduationYear ? "graduationYear-error" : undefined
+                    }
+                    className="form-input-field bg-white"
+                  >
+                    {GRADUATION_YEAR_OPTIONS.map((yr) => (
+                      <option key={yr} value={yr}>
+                        {yr}
+                      </option>
+                    ))}
+                  </select>
+                  {renderFieldError("graduationYear")}
+                </div>
               </div>
 
               {/* Institution Input */}
               <div>
                 <label
                   htmlFor="institution"
-                  className="block text-sm sm:text-base font-bold text-issca-navy mb-1.5"
+                  className="block text-sm font-bold text-issca-navy mb-1.5"
                 >
                   Université, faculté ou école d’origine{" "}
                   <span className="text-issca-red">*</span>
@@ -582,104 +563,22 @@ export function CandidatureFunnel() {
                 {renderFieldError("institution")}
               </div>
 
-              {/* Graduation Year Radio Buttons (5 options -> exposed as visible radios per modern-web-guidance) */}
-              <fieldset
-                aria-describedby={
-                  errors.graduationYear ? "graduationYear-error" : undefined
-                }
-              >
-                <legend className="text-sm sm:text-base font-bold text-issca-navy">
-                  Année d’obtention du diplôme (ou prévue){" "}
-                  <span className="text-issca-red">*</span>
-                </legend>
-                <div className="mt-2.5 flex flex-wrap gap-2.5">
-                  {GRADUATION_YEAR_OPTIONS.map((yr) => {
-                    const checked = form.graduationYear === yr;
-                    return (
-                      <label
-                        key={yr}
-                        className={`cursor-pointer inline-flex min-h-[48px] items-center gap-2 rounded-xl border px-4 py-2 text-xs sm:text-sm font-semibold transition-colors ${
-                          checked
-                            ? "border-issca-blue bg-blue-50 text-issca-navy"
-                            : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="graduationYear"
-                          value={yr}
-                          checked={checked}
-                          onChange={() => updateField("graduationYear", yr)}
-                          className="h-4 w-4 text-issca-blue"
-                        />
-                        <span>{yr}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-                {renderFieldError("graduationYear")}
-              </fieldset>
-
-              <div className="pt-4 flex items-center justify-end">
+              <div className="pt-2 flex items-center justify-end">
                 <button
                   type="button"
                   onClick={handleNextStep}
                   className="btn-primary-red w-full sm:w-auto text-base px-7"
                 >
-                  <span>Continuer vers l’étape 2</span>
+                  <span>Continuer</span>
                   <span aria-hidden="true">→</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 2: ADMISSION INTENTIONS */}
+          {/* STEP 2: CURRENT SITUATION */}
           {step === 2 && (
             <div className="space-y-6">
-              {/* Desired Intake */}
-              <fieldset
-                aria-describedby={errors.desiredIntake ? "desiredIntake-error" : undefined}
-              >
-                <legend className="text-sm sm:text-base font-bold text-issca-navy">
-                  Pour quelle année universitaire candidatez-vous&nbsp;?{" "}
-                  <span className="text-issca-red">*</span>
-                </legend>
-                <div className="mt-3 space-y-3">
-                  {DESIRED_INTAKE_OPTIONS.map((option) => {
-                    const checked = form.desiredIntake === option.value;
-                    return (
-                      <label
-                        key={option.value}
-                        className={`cursor-pointer rounded-xl border p-4 flex items-start gap-3 transition-colors ${
-                          checked
-                            ? "border-issca-blue bg-blue-50/60 ring-2 ring-issca-blue/20"
-                            : "border-slate-300 bg-white hover:bg-slate-50"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="desiredIntake"
-                          value={option.value}
-                          checked={checked}
-                          onChange={() => updateField("desiredIntake", option.value)}
-                          className="mt-1 h-4 w-4 text-issca-blue"
-                        />
-                        <div>
-                          <span className="block text-sm font-bold text-issca-navy">
-                            {formatFrench(option.label)}
-                          </span>
-                          <span className="mt-0.5 block text-xs text-slate-600">
-                            {formatFrench(option.description)}
-                          </span>
-                        </div>
-                      </label>
-                    );
-                  })}
-                </div>
-                {renderFieldError("desiredIntake")}
-              </fieldset>
-
-              {/* Current Situation */}
               <fieldset
                 aria-describedby={
                   errors.currentSituation ? "currentSituation-error" : undefined
@@ -695,7 +594,7 @@ export function CandidatureFunnel() {
                     return (
                       <label
                         key={option.value}
-                        className={`cursor-pointer rounded-xl border p-3.5 flex items-center gap-3 transition-colors min-h-[48px] ${
+                        className={`cursor-pointer rounded-xl border p-4 flex items-center gap-3 transition-colors min-h-[52px] ${
                           checked
                             ? "border-issca-blue bg-blue-50/60 ring-2 ring-issca-blue/20"
                             : "border-slate-300 bg-white hover:bg-slate-50"
@@ -709,7 +608,7 @@ export function CandidatureFunnel() {
                           onChange={() => updateField("currentSituation", option.value)}
                           className="h-4 w-4 text-issca-blue shrink-0"
                         />
-                        <span className="text-xs sm:text-sm font-bold text-issca-navy">
+                        <span className="text-sm font-bold text-issca-navy">
                           {formatFrench(option.label)}
                         </span>
                       </label>
@@ -719,85 +618,21 @@ export function CandidatureFunnel() {
                 {renderFieldError("currentSituation")}
               </fieldset>
 
-              {/* Readiness before November 28, 2026 */}
-              <fieldset
-                aria-describedby={errors.readiness ? "readiness-error" : undefined}
-              >
-                <legend className="text-sm sm:text-base font-bold text-issca-navy">
-                  Disponibilité par rapport à la clôture du 28 novembre 2026{" "}
-                  <span className="text-issca-red">*</span>
-                </legend>
-                <div className="mt-3 space-y-3">
-                  {READINESS_OPTIONS.map((option) => {
-                    const checked = form.readiness === option.value;
-                    return (
-                      <label
-                        key={option.value}
-                        className={`cursor-pointer rounded-xl border p-4 flex items-start justify-between gap-3 transition-colors ${
-                          checked
-                            ? "border-issca-blue bg-blue-50/60 ring-2 ring-issca-blue/20"
-                            : "border-slate-300 bg-white hover:bg-slate-50"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <input
-                            type="radio"
-                            name="readiness"
-                            value={option.value}
-                            checked={checked}
-                            onChange={() => updateField("readiness", option.value)}
-                            className="mt-1 h-4 w-4 text-issca-blue shrink-0"
-                          />
-                          <span className="text-xs sm:text-sm font-bold text-issca-navy">
-                            {formatFrench(option.label)}
-                          </span>
-                        </div>
-                        <span className="hidden sm:inline-flex shrink-0 items-center rounded-md bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700">
-                          {option.badge}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-                {renderFieldError("readiness")}
-              </fieldset>
-
-              {/* Optional Motivation */}
-              <div>
-                <label
-                  htmlFor="motivation"
-                  className="block text-sm sm:text-base font-bold text-issca-navy mb-1"
-                >
-                  Votre objectif professionnel ou projet startup{" "}
-                  <span className="text-xs font-normal text-slate-500">(facultatif)</span>
-                </label>
-                <textarea
-                  id="motivation"
-                  name="motivation"
-                  rows={3}
-                  value={form.motivation}
-                  onChange={(e) => updateField("motivation", e.target.value)}
-                  placeholder="Ex. : Créer une startup, évoluer vers un poste de Product Manager / Consultant IA..."
-                  className="form-input-field"
-                />
-                {renderFieldError("motivation")}
-              </div>
-
-              <div className="pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <button
                   type="button"
                   onClick={() => handlePrevStep(1)}
                   className="btn-secondary-outline text-sm px-5"
                 >
                   <span aria-hidden="true">←</span>
-                  <span>Étape précédente</span>
+                  <span>Retour</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleNextStep}
                   className="btn-primary-red text-base px-7"
                 >
-                  <span>Continuer vers mes coordonnées</span>
+                  <span>Continuer</span>
                   <span aria-hidden="true">→</span>
                 </button>
               </div>
@@ -863,8 +698,7 @@ export function CandidatureFunnel() {
                     htmlFor="phone"
                     className="block text-sm font-bold text-issca-navy mb-1.5"
                   >
-                    Numéro de téléphone (WhatsApp / Appel){" "}
-                    <span className="text-issca-red">*</span>
+                    Téléphone (WhatsApp / Appel) <span className="text-issca-red">*</span>
                   </label>
                   <input
                     id="phone"
@@ -878,7 +712,7 @@ export function CandidatureFunnel() {
                     onBlur={() => validateSingleField("phone")}
                     aria-invalid={Boolean(errors.phone)}
                     aria-describedby={errors.phone ? "phone-error" : undefined}
-                    placeholder="Ex. : 20 390 039 ou +216 20 390 039"
+                    placeholder="Ex. : 20 390 039"
                     className="form-input-field"
                   />
                   {renderFieldError("phone")}
@@ -942,7 +776,7 @@ export function CandidatureFunnel() {
                   htmlFor="comments"
                   className="block text-sm font-bold text-issca-navy mb-1"
                 >
-                  Questions particulières pour le conseiller aux admissions{" "}
+                  Questions particulières{" "}
                   <span className="text-xs font-normal text-slate-500">(facultatif)</span>
                 </label>
                 <textarea
@@ -951,7 +785,7 @@ export function CandidatureFunnel() {
                   rows={2}
                   value={form.comments}
                   onChange={(e) => updateField("comments", e.target.value)}
-                  placeholder="Ex. : Demande de précision sur l'intégration en M2, les horaires, l'échéancier..."
+                  placeholder="Ex. : Question sur l’alternance, les horaires..."
                   className="form-input-field"
                 />
                 {renderFieldError("comments")}
@@ -974,8 +808,8 @@ export function CandidatureFunnel() {
                     />
                     <span className="text-xs sm:text-sm text-slate-700 leading-relaxed">
                       J’accepte que mes informations soient traitées par{" "}
-                      <strong>{ISSCA_INSTITUTION.shortName}</strong> aux fins d’étude de ma
-                      pré-candidature et de prise de contact par le service des admissions.{" "}
+                      <strong>{ISSCA_INSTITUTION.shortName}</strong> pour l’étude de ma
+                      pré-candidature et la prise de contact par le service des admissions.{" "}
                       <Link
                         href="/confidentialite"
                         target="_blank"
@@ -998,20 +832,20 @@ export function CandidatureFunnel() {
                     className="mt-1 h-4 w-4 rounded border-slate-300 text-issca-blue focus:ring-issca-blue shrink-0"
                   />
                   <span className="text-xs text-slate-600 leading-relaxed">
-                    J’accepte de recevoir par e-mail ou WhatsApp les actualités, journées portes
-                    ouvertes et informations sur les programmes d’ISSCA Business School (facultatif).
+                    J’accepte de recevoir par e-mail ou WhatsApp les actualités et informations
+                    sur les programmes d’ISSCA Business School (facultatif).
                   </span>
                 </label>
               </div>
 
-              <div className="pt-4 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <button
                   type="button"
                   onClick={() => handlePrevStep(2)}
                   className="btn-secondary-outline text-sm px-5"
                 >
                   <span aria-hidden="true">←</span>
-                  <span>Étape précédente</span>
+                  <span>Retour</span>
                 </button>
                 <button
                   type="button"
@@ -1056,24 +890,13 @@ export function CandidatureFunnel() {
                 <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider text-issca-blue">
-                      2. Projet &amp; Disponibilité
+                      2. Situation actuelle
                     </p>
                     <p className="mt-1 text-sm font-bold text-issca-navy">
-                      {getDesiredIntakeLabel(form.desiredIntake)}
-                    </p>
-                    <p className="text-xs text-slate-600">
-                      Situation :{" "}
                       {form.currentSituation
                         ? getCurrentSituationLabel(form.currentSituation)
-                        : ""}{" "}
-                      ·{" "}
-                      {form.readiness ? getReadinessLabel(form.readiness) : ""}
+                        : ""}
                     </p>
-                    {form.motivation && (
-                      <p className="mt-1 text-xs text-slate-700 italic">
-                        « {form.motivation} »
-                      </p>
-                    )}
                   </div>
                   <button
                     type="button"
@@ -1088,7 +911,7 @@ export function CandidatureFunnel() {
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wider text-issca-blue">
-                      3. Coordonnées personnelles
+                      3. Vos coordonnées
                     </p>
                     <p className="mt-1 text-sm font-bold text-issca-navy">
                       {form.firstName} {form.lastName} ({form.city})
@@ -1114,10 +937,10 @@ export function CandidatureFunnel() {
 
               <div className="rounded-xl bg-blue-50/70 border border-blue-200 p-4 text-xs sm:text-sm text-slate-700">
                 <p className="font-bold text-issca-navy">
-                  Que se passe-t-il après l’envoi de votre pré-candidature&nbsp;?
+                  Prochaine étape : appel d’un conseiller
                 </p>
                 <p className="mt-1 leading-relaxed">
-                  Votre demande est enregistrée auprès du service des admissions d’ISSCA Business School. Un conseiller vous contactera rapidement pour valider les pièces de votre dossier et planifier votre entretien d’admission avant la clôture du 28 novembre 2026.
+                  Dès l’envoi de votre demande, un conseiller aux admissions d’ISSCA Business School vous rappellera sous 24h à 48h pour répondre à vos questions et valider votre dossier.
                 </p>
               </div>
 
@@ -1133,7 +956,7 @@ export function CandidatureFunnel() {
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
-                      strokeWidth={2}
+                      strokeWidth={2.5}
                       aria-hidden="true"
                     >
                       <path
@@ -1167,7 +990,7 @@ export function CandidatureFunnel() {
                   className="btn-secondary-outline text-sm px-5 disabled:opacity-50"
                 >
                   <span aria-hidden="true">←</span>
-                  <span>Modifier mes coordonnées</span>
+                  <span>Retour</span>
                 </button>
 
                 <button
