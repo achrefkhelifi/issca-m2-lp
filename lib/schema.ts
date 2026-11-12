@@ -5,7 +5,7 @@ export const PROGRAM_NAME =
   "Master Professionnel en Management des Startups et de l'Intelligence Artificielle" as const;
 export const INSTITUTION_NAME = "ISSCA Business School" as const;
 export const CAMPUS_NAME = "Sousse" as const;
-export const FORM_VERSION = "2026.11-v1" as const;
+export const FORM_VERSION = "2026.11-v2" as const;
 
 export const DEGREE_LEVEL_OPTIONS = [
   {
@@ -45,18 +45,18 @@ export const GRADUATION_YEAR_OPTIONS = [
 export const DESIRED_INTAKE_OPTIONS = [
   {
     value: "session_nov_2026",
-    label: "Session actuelle (clôture le 28 novembre 2026)",
-    description: "Intégrer la promotion en cours avant la date limite officielle du 28 novembre 2026.",
+    label: "Année universitaire 2026/2027 (inscriptions jusqu’au 28 novembre)",
+    description: "Rejoindre la promotion 2026/2027 avant la clôture des inscriptions du 28 novembre.",
   },
   {
     value: "prochaine_rentree",
-    label: "Prochaine rentrée universitaire",
-    description: "Préparer mon dossier en avance pour la session suivante.",
+    label: "Année universitaire suivante (2027/2028)",
+    description: "Préparer mon dossier en avance pour la prochaine rentrée universitaire.",
   },
   {
     value: "besoin_conseil",
     label: "Je souhaite d’abord échanger avec les admissions",
-    description: "Obtenir des précisions sur le programme, l’éligibilité ou les modalités avant de confirmer.",
+    description: "Obtenir des précisions sur le programme ou les modalités avant de confirmer.",
   },
 ] as const;
 
@@ -82,7 +82,7 @@ export const CURRENT_SITUATION_OPTIONS = [
 export const READINESS_OPTIONS = [
   {
     value: "pret_avant_28_nov",
-    label: "Prêt(e) à finaliser mon inscription avant le 28 novembre 2026",
+    label: "Prêt(e) à finaliser mon inscription avant le 28 novembre",
     badge: "Traitement prioritaire",
   },
   {
@@ -102,11 +102,6 @@ export type DesiredIntakeValue = (typeof DESIRED_INTAKE_OPTIONS)[number]["value"
 export type CurrentSituationValue = (typeof CURRENT_SITUATION_OPTIONS)[number]["value"];
 export type ReadinessValue = (typeof READINESS_OPTIONS)[number]["value"];
 
-/**
- * Normalizes a Tunisian or international phone number while preserving readability.
- * Accepts 8-digit local Tunisian numbers (e.g. "20 390 039" -> "+21620390039")
- * or international numbers starting with + or 00.
- */
 export function normalizePhone(raw: string): string {
   const trimmed = raw.trim();
   const digitsAndPlus = trimmed.replace(/[\s.\-()]/g, "");
@@ -125,7 +120,6 @@ export function normalizePhone(raw: string): string {
 
 export function isValidPhone(raw: string): boolean {
   const normalized = normalizePhone(raw);
-  // Tunisian +216 followed by 8 digits (starting with 2, 3, 4, 5, 7, 9) or valid E.164 international (8 to 15 digits)
   return /^\+216[234579]\d{7}$/.test(normalized) || /^\+[1-9]\d{7,14}$/.test(normalized);
 }
 
@@ -152,7 +146,7 @@ export const step1Schema = z.object({
 
 export const step2Schema = z.object({
   desiredIntake: z.enum(["session_nov_2026", "prochaine_rentree", "besoin_conseil"], {
-    message: "Veuillez indiquer la session souhaitée.",
+    message: "Veuillez indiquer l’année universitaire souhaitée.",
   }),
   currentSituation: z.enum(
     ["etudiant_jeune_diplome", "salarie_en_poste", "porteur_projet_startup", "en_transition"],
@@ -224,9 +218,7 @@ export const candidatureSchema = z.object({
   ...step1Schema.shape,
   ...step2Schema.shape,
   ...step3Schema.shape,
-  // Anti-spam honeypot (must stay empty)
   website: z.string().max(0, "Spam détecté.").optional().default(""),
-  // Tracking & attribution metadata
   eventId: z.string().trim().min(8).max(128),
   idempotencyKey: z.string().trim().min(8).max(128),
   submittedFrom: z.string().trim().max(200).optional().default("/candidature"),
@@ -239,7 +231,7 @@ export const candidatureSchema = z.object({
   gclid: z.string().trim().max(255).optional().default(""),
   fbp: z.string().trim().max(255).optional().default(""),
   fbc: z.string().trim().max(255).optional().default(""),
-  analyticsConsent: z.boolean().optional().default(false),
+  analyticsConsent: z.boolean().optional().default(true),
 });
 
 export type CandidatureInput = z.input<typeof candidatureSchema>;
@@ -265,10 +257,6 @@ export function getReadinessLabel(value: ReadinessValue): string {
   return READINESS_OPTIONS.find((o) => o.value === value)?.label ?? value;
 }
 
-/**
- * Formats the Odoo CRM Opportunity title as required:
- * "[Full Name] — Master Startups & IA — [Degree Level]"
- */
 export function buildOdooOpportunityTitle(data: {
   firstName: string;
   lastName: string;
@@ -279,10 +267,6 @@ export function buildOdooOpportunityTitle(data: {
   return `${fullName} — Master Startups & IA — ${degreeShort}`;
 }
 
-/**
- * Generates a structured, human-readable French admissions summary suitable for
- * Odoo CRM internal notes (description) and Resend email notifications.
- */
 export function buildAdmissionsSummary(data: CandidaturePayload, submissionId: string): string {
   const isPriority = data.readiness === "pret_avant_28_nov";
   const lines = [
@@ -290,8 +274,8 @@ export function buildAdmissionsSummary(data: CandidaturePayload, submissionId: s
     `Référence : ${submissionId}`,
     `Programme : ${PROGRAM_NAME} (${PROGRAM_ID})`,
     `Campus : ${CAMPUS_NAME}`,
-    `Priorité Clôture 28 nov. 2026 : ${
-      isPriority ? "OUI — Prêt(e) à s'inscrire avant le 28/11/2026" : "Standard — Accompagnement requis"
+    `Priorité Clôture 28 nov. : ${
+      isPriority ? "OUI — Prêt(e) à s'inscrire avant le 28/11" : "Standard — Accompagnement requis"
     }`,
     ``,
     `--- CANDIDAT(E) ---`,
@@ -306,8 +290,8 @@ export function buildAdmissionsSummary(data: CandidaturePayload, submissionId: s
     `Établissement d'origine : ${data.institution}`,
     `Année d'obtention : ${data.graduationYear}`,
     ``,
-    `--- PROJET & INTENTIONS D'ADMISSION ---`,
-    `Session souhaitée : ${getDesiredIntakeLabel(data.desiredIntake)}`,
+    `--- PROJET & ANNÉE UNIVERSITAIRE ---`,
+    `Année universitaire souhaitée : ${getDesiredIntakeLabel(data.desiredIntake)}`,
     `Situation actuelle : ${getCurrentSituationLabel(data.currentSituation)}`,
     `Disponibilité : ${getReadinessLabel(data.readiness)}`,
     `Objectif / Motivation : ${data.motivation ? data.motivation : "Non renseigné"}`,

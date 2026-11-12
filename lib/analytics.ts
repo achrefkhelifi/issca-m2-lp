@@ -1,17 +1,10 @@
 /**
- * Consent-aware analytics, UTM/Click-ID attribution persistence, and
+ * Analytics, UTM/Click-ID attribution persistence, and
  * client/server deduplication for GA4 (gtag / GTM dataLayer) and Meta Pixel.
- *
- * Rules enforced:
- * 1. Never fire `Lead` or `generate_lead` on page load or form start.
- * 2. Fire `Lead` / `generate_lead` strictly once after `/api/lead` returns HTTP 200,
- *    passing the shared `eventId` so Meta Pixel and Meta CAPI deduplicate accurately.
- * 3. Guard against duplicate conversion firing on `/merci` page refresh via sessionStorage.
  */
 
 import { PROGRAM_ID, PROGRAM_NAME } from "./schema";
 
-export const CONSENT_STORAGE_KEY = "issca_join_cookie_consent_v1";
 export const ATTRIBUTION_STORAGE_KEY = "issca_join_attribution_v1";
 export const LAST_SUBMISSION_STORAGE_KEY = "issca_join_last_submission_v1";
 export const FIRED_EVENTS_STORAGE_KEY = "issca_join_fired_events_v1";
@@ -50,24 +43,7 @@ declare global {
 }
 
 export function getConsentStatus(): ConsentStatus {
-  if (typeof window === "undefined") return "undecided";
-  try {
-    const raw = window.localStorage.getItem(CONSENT_STORAGE_KEY);
-    if (raw === "granted" || raw === "declined") return raw;
-    return "undecided";
-  } catch {
-    return "undecided";
-  }
-}
-
-export function setConsentStatus(status: "granted" | "declined"): void {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(CONSENT_STORAGE_KEY, status);
-    window.dispatchEvent(new CustomEvent("issca:consent-updated", { detail: status }));
-  } catch {
-    // Ignore storage quota errors in private browsing
-  }
+  return "granted";
 }
 
 function getCookieValue(name: string): string {
@@ -184,7 +160,6 @@ function pushGtmAndGtag(eventName: string, params: Record<string, unknown>): voi
 
 export function trackProgramView(): void {
   if (typeof window === "undefined") return;
-  if (getConsentStatus() !== "granted") return;
 
   const key = `view_content_${window.location.pathname}`;
   if (hasEventFired(key)) return;
@@ -208,7 +183,6 @@ export function trackProgramView(): void {
 
 export function trackCtaClick(ctaLocation: string, ctaLabel: string): void {
   if (typeof window === "undefined") return;
-  if (getConsentStatus() !== "granted") return;
 
   pushGtmAndGtag("select_promotion", {
     promotion_id: ctaLocation,
@@ -218,7 +192,6 @@ export function trackCtaClick(ctaLocation: string, ctaLabel: string): void {
 
 export function trackFormStart(): void {
   if (typeof window === "undefined") return;
-  if (getConsentStatus() !== "granted") return;
   if (hasEventFired("form_start_candidature")) return;
   markEventFired("form_start_candidature");
 
@@ -230,7 +203,6 @@ export function trackFormStart(): void {
 
 export function trackFormStep(stepNumber: number, stepName: string): void {
   if (typeof window === "undefined") return;
-  if (getConsentStatus() !== "granted") return;
 
   const key = `form_step_${stepNumber}`;
   if (hasEventFired(key)) return;
@@ -255,8 +227,6 @@ export function trackConfirmedLead(params: {
   const dedupKey = `lead_confirmed_${params.eventId}`;
   if (hasEventFired(dedupKey)) return;
   markEventFired(dedupKey);
-
-  if (getConsentStatus() !== "granted") return;
 
   pushGtmAndGtag("generate_lead", {
     event_id: params.eventId,

@@ -1,81 +1,68 @@
 import React from "react";
-import { CAREER_CLUSTERS } from "@/content/program";
+import Link from "next/link";
 import { formatFrench } from "@/lib/typography";
+
+const CAREER_PILLS = [
+  { label: "Product Manager", tag: "Startups" },
+  { label: "Consultant IA", tag: "IA & Data" },
+  { label: "Business Manager IA & Data Science", tag: "IA & Data" },
+  { label: "Team Leader en startup", tag: "Startups" },
+  { label: "Référent Manager IA", tag: "IA & Data" },
+  { label: "Business Developer", tag: "Startups" },
+  { label: "Account Manager", tag: "Leadership" },
+  { label: "Responsable RH en startup", tag: "Leadership" },
+  { label: "Talent Acquisition Manager", tag: "Leadership" },
+] as const;
 
 export function CareerOpportunities() {
   return (
     <section
       id="debouches"
       aria-labelledby="heading-debouches"
-      className="py-16 sm:py-24 bg-issca-surface border-b border-slate-200 cv-auto-section"
+      className="py-20 sm:py-28 bg-white cv-auto-section"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <p className="text-xs sm:text-sm font-bold uppercase tracking-wider text-issca-blue">
-            Perspectives Professionnelles
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8">
+        <div className="max-w-xl">
+          <p className="text-xs sm:text-sm font-bold uppercase tracking-widest text-issca-blue mb-2">
+            {formatFrench("Après le Master")}
           </p>
-          <h2 id="heading-debouches" className="mt-2 heading-section font-extrabold text-issca-navy">
+          <h2
+            id="heading-debouches"
+            className="heading-section font-extrabold text-issca-navy"
+          >
             {formatFrench("Les métiers qui s’ouvrent à vous")}
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-slate-700">
+          <p className="mt-3 text-base sm:text-lg text-slate-600">
             {formatFrench(
-              "En combinant gestion d’entreprise, culture startup et maîtrise des enjeux de l’intelligence artificielle, ce Master prépare à trois grandes familles de métiers recherchés par les entreprises innovantes."
+              "Entrepreneuriat, pilotage de l’IA ou direction d’équipes : vous êtes formé(e) pour les fonctions qui font le pont entre la technologie et la décision."
             )}
           </p>
         </div>
 
-        {/* 3 Career Clusters */}
-        <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-          {CAREER_CLUSTERS.map((cluster) => {
-            const topBorderClass =
-              cluster.accentColor === "red"
-                ? "border-t-4 border-t-issca-red"
-                : cluster.accentColor === "blue"
-                ? "border-t-4 border-t-issca-blue"
-                : "border-t-4 border-t-issca-navy";
-
-            return (
-              <div
-                key={cluster.id}
-                className={`rounded-2xl bg-white border border-slate-200 p-6 sm:p-7 shadow-sm flex flex-col justify-between ${topBorderClass}`}
-              >
-                <div>
-                  <h3 className="heading-card font-extrabold text-issca-navy">
-                    {formatFrench(cluster.title)}
-                  </h3>
-                  <p className="mt-1.5 text-xs sm:text-sm font-medium text-slate-600">
-                    {formatFrench(cluster.subtitle)}
-                  </p>
-
-                  <ul className="mt-6 space-y-5">
-                    {cluster.roles.map((role) => (
-                      <li
-                        key={role.title}
-                        className="rounded-xl bg-slate-50 border border-slate-200/80 p-4"
-                      >
-                        <p className="text-base font-bold text-issca-navy flex items-center gap-2">
-                          <span
-                            aria-hidden="true"
-                            className="h-2 w-2 rounded-full bg-issca-red shrink-0"
-                          />
-                          <span>{formatFrench(role.title)}</span>
-                        </p>
-                        <p className="mt-1.5 text-xs sm:text-sm text-slate-700 leading-relaxed">
-                          {formatFrench(role.description)}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            );
-          })}
+        {/* Cocon-style Pill Cloud */}
+        <div className="mt-10 flex flex-wrap gap-3">
+          {CAREER_PILLS.map((role) => (
+            <Link
+              key={role.label}
+              href="/candidature"
+              className="inline-flex items-center gap-2.5 rounded-full bg-issca-surface border border-slate-200/90 py-2.5 pl-3.5 pr-5 text-sm sm:text-base font-bold text-issca-navy hover:border-issca-red hover:-translate-y-0.5 transition-all shadow-2xs"
+            >
+              <span className="inline-flex items-center rounded-full bg-white border border-slate-200 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-issca-blue">
+                {role.tag}
+              </span>
+              <span>{formatFrench(role.label)}</span>
+            </Link>
+          ))}
         </div>
 
-        <p className="mt-8 text-xs sm:text-sm text-slate-600 bg-white border border-slate-200 rounded-xl px-4 py-3">
-          {formatFrench(
-            "Note d’orientation : ces intitulés correspondent aux débouchés professionnels visés par le référentiel du Master. L’insertion professionnelle dépend du parcours antérieur, de l’implication dans les projets et stages, ainsi que des opportunités du marché."
-          )}
+        <p className="mt-8 text-sm sm:text-base">
+          <Link
+            href="/candidature"
+            className="inline-flex items-center gap-1.5 font-bold text-issca-red hover:underline"
+          >
+            <span>{formatFrench("Vérifier mon adéquation avec le programme")}</span>
+            <span aria-hidden="true">→</span>
+          </Link>
         </p>
       </div>
     </section>

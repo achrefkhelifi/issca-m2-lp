@@ -1,19 +1,17 @@
 /**
  * Registration deadline management evaluated strictly in the Africa/Tunis timezone.
  * Official registration closing date: November 28, 2026 (2026-11-28T23:59:59+01:00).
- *
- * Uses native Temporal API (Temporal.Now.zonedDateTimeISO('Africa/Tunis') + .until())
- * when available in modern runtimes, with an Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Tunis' })
- * fallback so every browser computes identical calendar-day differentials in Tunisia time.
  */
 
 export const REGISTRATION_DEADLINE_ISO = "2026-11-28";
 export const REGISTRATION_TIMEZONE = "Africa/Tunis";
-export const REGISTRATION_DEADLINE_LABEL = "28 novembre 2026";
+export const REGISTRATION_DEADLINE_LABEL = "28 novembre";
+export const ACADEMIC_YEAR_LABEL = "2026/2027";
 
 export interface DeadlineStatus {
   deadlineIso: string;
   deadlineLabel: string;
+  academicYear: string;
   timeZone: string;
   tunisDateIso: string;
   isExpired: boolean;
@@ -118,18 +116,18 @@ export function getDeadlineStatus(referenceDate?: Date): DeadlineStatus {
     return {
       deadlineIso: REGISTRATION_DEADLINE_ISO,
       deadlineLabel: REGISTRATION_DEADLINE_LABEL,
+      academicYear: ACADEMIC_YEAR_LABEL,
       timeZone: REGISTRATION_TIMEZONE,
       tunisDateIso,
       isExpired: true,
       daysRemaining: 0,
       urgencyLevel: "closed",
-      bannerText:
-        "Clôture des inscriptions du 28 novembre 2026 atteinte — Contactez le service des admissions pour connaître les prochaines sessions ou déposer un dossier tardif.",
-      badgeText: "Session du 28 novembre 2026 clôturée · Contactez l’administration",
+      bannerText: `Année universitaire ${ACADEMIC_YEAR_LABEL} — Clôture des inscriptions du 28 novembre atteinte`,
+      badgeText: `Année universitaire ${ACADEMIC_YEAR_LABEL} · Contactez les admissions`,
       countdownChipText: null,
       primaryCtaLabel: "Contacter le service des admissions",
       funnelSubtext:
-        "La date limite du 28 novembre 2026 étant passée, votre dossier sera transmis au service des admissions pour étude de disponibilité ou orientation vers la prochaine session.",
+        "La date limite du 28 novembre étant passée, votre dossier sera transmis au service des admissions pour étude de disponibilité.",
     };
   }
 
@@ -142,23 +140,24 @@ export function getDeadlineStatus(referenceDate?: Date): DeadlineStatus {
 
   const countdownChipText =
     daysRemaining === 0
-      ? "Dernier jour (clôture ce soir à 23h59, heure de Tunis)"
+      ? "Dernier jour"
       : daysRemaining === 1
-      ? "J-1 avant clôture (heure de Tunis)"
-      : `J-${daysRemaining} (${daysRemaining}\u00A0jours restants)`;
+      ? "J-1"
+      : `J-${daysRemaining}`;
 
   return {
     deadlineIso: REGISTRATION_DEADLINE_ISO,
     deadlineLabel: REGISTRATION_DEADLINE_LABEL,
+    academicYear: ACADEMIC_YEAR_LABEL,
     timeZone: REGISTRATION_TIMEZONE,
     tunisDateIso,
     isExpired: false,
     daysRemaining,
     urgencyLevel,
-    bannerText: `Inscriptions ouvertes jusqu’au ${REGISTRATION_DEADLINE_LABEL}`,
-    badgeText: `Clôture des inscriptions\u202F: ${REGISTRATION_DEADLINE_LABEL}`,
+    bannerText: `Année universitaire ${ACADEMIC_YEAR_LABEL} — Inscriptions ouvertes jusqu’au ${REGISTRATION_DEADLINE_LABEL}`,
+    badgeText: `Année universitaire ${ACADEMIC_YEAR_LABEL} · Inscriptions ouvertes jusqu’au ${REGISTRATION_DEADLINE_LABEL}`,
     countdownChipText,
     primaryCtaLabel: "Démarrer ma candidature",
-    funnelSubtext: `Les dossiers complets doivent être finalisés avant le ${REGISTRATION_DEADLINE_LABEL}. Déposez votre pré-candidature en 2\u00A0minutes pour être accompagné(e) par un conseiller.`,
+    funnelSubtext: `Année universitaire ${ACADEMIC_YEAR_LABEL} — Inscriptions ouvertes jusqu’au ${REGISTRATION_DEADLINE_LABEL}. Déposez votre pré-candidature en 2\u00A0minutes.`,
   };
 }

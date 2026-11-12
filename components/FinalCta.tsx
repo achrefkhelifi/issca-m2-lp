@@ -16,48 +16,43 @@ export function FinalCta() {
   return (
     <section
       aria-labelledby="heading-final-cta"
-      className="py-16 sm:py-24 bg-issca-navy text-white cv-auto-section"
+      className="py-16 sm:py-24 bg-white cv-auto-section"
     >
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs sm:text-sm font-bold text-red-300">
-          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-issca-red" />
-          <span>{deadline.badgeText}</span>
-          {deadline.countdownChipText && (
-            <span className="text-white">· {deadline.countdownChipText}</span>
-          )}
-        </span>
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8">
+        <div className="rounded-3xl bg-issca-navy text-white p-8 sm:p-14 lg:p-16 text-center shadow-elevated relative overflow-hidden">
+          <div className="relative z-10 max-w-2xl mx-auto">
+            <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1 text-xs font-bold text-red-300 mb-5">
+              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-issca-red" />
+              <span>{deadline.badgeText}</span>
+            </span>
 
-        <h2
-          id="heading-final-cta"
-          className="mt-6 heading-section font-extrabold text-white max-w-3xl mx-auto"
-        >
-          {formatFrench(
-            "Prêt(e) à construire votre avenir dans le management et l’IA ?"
-          )}
-        </h2>
+            <h2
+              id="heading-final-cta"
+              className="heading-section font-extrabold text-white"
+            >
+              {formatFrench("Prêt(e) à rejoindre le Master ?")}
+            </h2>
 
-        <p className="mt-4 text-base sm:text-lg text-slate-200 max-w-2xl mx-auto leading-relaxed">
-          {formatFrench(
-            "Complétez votre pré-candidature en quelques minutes. Un conseiller aux admissions d’ISSCA Business School prendra contact avec vous pour étudier votre dossier et organiser votre entretien."
-          )}
-        </p>
+            <p className="mt-4 text-base sm:text-lg text-slate-200 max-w-[46ch] mx-auto leading-relaxed">
+              {formatFrench(
+                "Déposez votre pré-candidature en deux minutes — un conseiller aux admissions vous rappelle sous 24h à 48h."
+              )}
+            </p>
 
-        <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4">
-          <Link
-            href="/candidature"
-            onClick={() => trackCtaClick("final_cta_section", deadline.primaryCtaLabel)}
-            className="btn-primary-red text-base sm:text-lg px-8 py-4 shadow-elevated"
-          >
-            <span>{deadline.primaryCtaLabel}</span>
-            <span aria-hidden="true">→</span>
-          </Link>
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/candidature"
+                onClick={() =>
+                  trackCtaClick("final_cta_primary", deadline.primaryCtaLabel)
+                }
+                className="btn-primary-red rounded-full text-base sm:text-lg px-9 py-4 shadow-card"
+              >
+                <span>{deadline.primaryCtaLabel}</span>
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </div>
         </div>
-
-        <p className="mt-5 text-xs sm:text-sm text-slate-300">
-          {formatFrench(
-            "Aucun frais ni document scanné n’est exigé lors de cette première étape en ligne."
-          )}
-        </p>
       </div>
     </section>
   );

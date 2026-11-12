@@ -2,12 +2,9 @@ import React from "react";
 import { DeadlineBanner } from "@/components/DeadlineBanner";
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
-import { CandidateProfiles } from "@/components/CandidateProfiles";
-import { CareerOpportunities } from "@/components/CareerOpportunities";
-import { CompetencyPillars } from "@/components/CompetencyPillars";
 import { AcademicJourney } from "@/components/AcademicJourney";
-import { LearningByDoing } from "@/components/LearningByDoing";
-import { WhyIssca } from "@/components/WhyIssca";
+import { CareerOpportunities } from "@/components/CareerOpportunities";
+import { Commitments } from "@/components/Commitments";
 import { TuitionAndAdmissions } from "@/components/TuitionAndAdmissions";
 import { FaqAccordion } from "@/components/FaqAccordion";
 import { FinalCta } from "@/components/FinalCta";
@@ -21,12 +18,9 @@ export default function HomePage() {
       <Header />
       <main id="main-content" className="flex-1">
         <Hero />
-        <CandidateProfiles />
-        <CareerOpportunities />
-        <CompetencyPillars />
         <AcademicJourney />
-        <LearningByDoing />
-        <WhyIssca />
+        <CareerOpportunities />
+        <Commitments />
         <TuitionAndAdmissions />
         <FaqAccordion />
         <FinalCta />

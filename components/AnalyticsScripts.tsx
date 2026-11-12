@@ -1,46 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Script from "next/script";
-import {
-  captureAttributionFromUrl,
-  getConsentStatus,
-  trackProgramView,
-  type ConsentStatus,
-} from "@/lib/analytics";
+import { captureAttributionFromUrl, trackProgramView } from "@/lib/analytics";
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "";
 const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "";
 
 export function AnalyticsScripts() {
-  const [consent, setConsent] = useState<ConsentStatus>("undecided");
-
   useEffect(() => {
     captureAttributionFromUrl();
-    const current = getConsentStatus();
-    setConsent(current);
-
-    const handleConsentUpdate = (e: Event) => {
-      const custom = e as CustomEvent<ConsentStatus>;
-      setConsent(custom.detail);
-    };
-
-    window.addEventListener("issca:consent-updated", handleConsentUpdate);
-    return () => {
-      window.removeEventListener("issca:consent-updated", handleConsentUpdate);
-    };
+    trackProgramView();
   }, []);
-
-  useEffect(() => {
-    if (consent === "granted") {
-      trackProgramView();
-    }
-  }, [consent]);
-
-  if (consent !== "granted") {
-    return null;
-  }
 
   return (
     <>

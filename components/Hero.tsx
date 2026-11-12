@@ -2,10 +2,16 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { HERO_CONTENT, ISSCA_INSTITUTION } from "@/content/program";
 import { getDeadlineStatus, type DeadlineStatus } from "@/lib/deadline";
 import { formatFrench } from "@/lib/typography";
 import { trackCtaClick } from "@/lib/analytics";
+
+const HERO_PILLS = [
+  "Accessible dès Bac+3 (Licence / Ingénieur)",
+  "Aucun prérequis en code",
+  "Stage de 4 à 6 mois en M2",
+  "Agrément MESRS n° 01/2018",
+] as const;
 
 export function Hero() {
   const [deadline, setDeadline] = useState<DeadlineStatus>(() => getDeadlineStatus());
@@ -17,150 +23,92 @@ export function Hero() {
   return (
     <section
       aria-labelledby="main-heading"
-      className="relative overflow-hidden bg-gradient-to-b from-issca-surface via-white to-white pt-6 pb-14 sm:pt-12 sm:pb-20 border-b border-slate-200"
+      className="relative overflow-hidden bg-white pt-6 pb-16 md:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          {/* Left Column: Editorial Value Proposition & CTAs */}
-          <div className="lg:col-span-7 space-y-6">
-            {/* Eyebrow & Deadline Status Pill */}
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="inline-flex items-center rounded-md bg-issca-navy px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
-                {HERO_CONTENT.eyebrow}
-              </span>
-              <span
-                className={
-                  deadline.isExpired
-                    ? "inline-flex items-center gap-1.5 rounded-md bg-slate-200 px-3 py-1 text-xs font-bold text-slate-800"
-                    : "inline-flex items-center gap-1.5 rounded-md bg-red-50 border border-red-200 px-3 py-1 text-xs font-bold text-issca-red"
-                }
-              >
-                <span
-                  aria-hidden="true"
-                  className="h-2 w-2 rounded-full bg-issca-red"
-                />
-                <span>{deadline.badgeText}</span>
-              </span>
-            </div>
+      <div className="mx-auto max-w-[1200px] px-5 sm:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.08fr_0.92fr] gap-10 lg:gap-14 items-center">
+          {/* Left Column: Clear, Spacious Value Proposition */}
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-blue-50 border border-blue-200/80 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-issca-blue mb-5">
+              <span className="h-2 w-2 rounded-full bg-issca-red" aria-hidden="true" />
+              {formatFrench("Sousse · Année universitaire 2026/2027 · Bac+5")}
+            </span>
 
-            {/* Primary H1 Headline (target of skip link with tabindex="-1") */}
-            <div className="space-y-3">
-              <p className="text-sm sm:text-base font-bold text-issca-blue">
-                {formatFrench(HERO_CONTENT.programTitle)}
-              </p>
-              <h1
-                id="main-heading"
-                tabIndex={-1}
-                className="heading-hero font-extrabold text-issca-navy focus:outline-none"
-              >
-                {formatFrench(HERO_CONTENT.headline)}
-              </h1>
-            </div>
+            <h1
+              id="main-heading"
+              tabIndex={-1}
+              className="heading-hero font-extrabold text-issca-navy tracking-tight focus:outline-none"
+            >
+              {formatFrench(
+                "L’IA transforme les entreprises. Préparez-vous à les diriger."
+              )}
+            </h1>
 
-            {/* Supporting Copy */}
-            <p className="text-base sm:text-lg text-slate-700 max-w-2xl leading-relaxed">
-              {formatFrench(HERO_CONTENT.supportingCopy)}
+            <p className="mt-5 text-base sm:text-lg text-slate-700 leading-relaxed max-w-[36em]">
+              <strong className="font-bold text-issca-navy">
+                {formatFrench("Master Management des Startups et de l’Intelligence Artificielle.")}
+              </strong>{" "}
+              {formatFrench(
+                "Deux ans à ISSCA Business School pour apprendre à lancer un produit, piloter des projets IA et diriger des équipes agiles — sans être ingénieur informaticien."
+              )}
             </p>
 
             {/* Primary & Secondary CTAs */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 pt-1">
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
               <Link
                 href="/candidature"
-                onClick={() => trackCtaClick("hero_primary", HERO_CONTENT.primaryCta)}
-                className="btn-primary-red text-base sm:text-lg px-7 py-3.5 shadow-card"
+                onClick={() => trackCtaClick("hero_primary", deadline.primaryCtaLabel)}
+                className="btn-primary-red rounded-full text-base px-7 py-3.5 shadow-card"
               >
                 <span>{deadline.primaryCtaLabel}</span>
                 <span aria-hidden="true">→</span>
               </Link>
               <a
-                href="#programme"
-                onClick={() => trackCtaClick("hero_secondary", HERO_CONTENT.secondaryCta)}
-                className="btn-secondary-outline text-base px-6 py-3.5"
+                href="#parcours"
+                onClick={() => trackCtaClick("hero_secondary", "Voir les 4 semestres")}
+                className="btn-secondary-outline rounded-full text-base px-6 py-3.5"
               >
-                <span>{HERO_CONTENT.secondaryCta}</span>
+                <span>{formatFrench("Voir les 4 semestres")}</span>
               </a>
             </div>
 
-            {/* Micro-reassurance */}
-            <p className="text-xs sm:text-sm text-slate-600 flex flex-wrap items-center gap-x-4 gap-y-1">
-              <span className="inline-flex items-center gap-1.5 font-medium text-slate-700">
-                <svg
-                  className="h-4 w-4 text-emerald-700 shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                  aria-hidden="true"
+            {/* 4 Cocon-style Checkmark Fact Pills */}
+            <div className="mt-9 flex flex-wrap gap-2.5">
+              {HERO_PILLS.map((pill) => (
+                <span
+                  key={pill}
+                  className="inline-flex items-center gap-2 rounded-full bg-issca-surface border border-slate-200 px-3.5 py-1.5 text-xs sm:text-sm font-medium text-issca-navy"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Pré-candidature en 2&nbsp;minutes (sans dépôt de fichiers)
-              </span>
-              <span className="inline-flex items-center gap-1.5 font-medium text-slate-700">
-                <svg
-                  className="h-4 w-4 text-issca-blue shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                  aria-hidden="true"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                Retour rapide d’un conseiller aux admissions
-              </span>
-            </p>
-
-            {/* Key Program Facts Grid */}
-            <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-200">
-              {HERO_CONTENT.keyFacts.map((fact) => (
-                <div
-                  key={fact.label}
-                  className="rounded-xl bg-slate-50 border border-slate-200/80 p-3"
-                >
-                  <dt className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                    {fact.label}
-                  </dt>
-                  <dd className="mt-1 text-sm font-bold text-issca-navy">
-                    {formatFrench(fact.value)}
-                  </dd>
-                </div>
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    className="text-issca-red shrink-0"
+                    aria-hidden="true"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{formatFrench(pill)}</span>
+                </span>
               ))}
-            </dl>
+            </div>
           </div>
 
-          {/* Right Column: Institutional Visual Card (LCP optimized with fetchpriority="high") */}
-          <div className="lg:col-span-5">
-            <div className="relative rounded-2xl bg-issca-navy p-2 sm:p-3 shadow-elevated border border-slate-200">
+          {/* Right Column: Clean Visual Frame */}
+          <div>
+            <div className="relative rounded-3xl overflow-hidden bg-issca-navy shadow-elevated border border-slate-200/80">
               <img
                 src="/images/campus/hero-campus.svg"
-                alt="Campus ISSCA Business School à Akouda, Sousse — Master Management des Startups et de l’Intelligence Artificielle"
+                alt="Campus ISSCA Business School à Sousse — Master Management des Startups et de l’IA"
                 width={800}
                 height={600}
                 fetchPriority="high"
                 decoding="async"
-                className="w-full h-auto rounded-xl object-cover"
+                className="w-full h-auto block"
               />
-              <div className="mt-3 rounded-xl bg-white/95 p-4 text-slate-800">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-issca-blue">
-                      Admission Session Actuelle
-                    </p>
-                    <p className="text-sm font-bold text-issca-navy mt-0.5">
-                      Date limite d’inscription&nbsp;: {deadline.deadlineLabel}
-                    </p>
-                  </div>
-                  {deadline.countdownChipText && (
-                    <span className="inline-flex shrink-0 items-center rounded-md bg-red-100 px-2.5 py-1 text-xs font-extrabold text-issca-red">
-                      {deadline.countdownChipText}
-                    </span>
-                  )}
-                </div>
-                <p className="mt-2 text-xs text-slate-600">
-                  {formatFrench(ISSCA_INSTITUTION.ministryAuthorizationText)}
-                </p>
-              </div>
             </div>
           </div>
         </div>

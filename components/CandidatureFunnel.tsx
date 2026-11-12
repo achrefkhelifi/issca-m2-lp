@@ -641,7 +641,7 @@ export function CandidatureFunnel() {
                 aria-describedby={errors.desiredIntake ? "desiredIntake-error" : undefined}
               >
                 <legend className="text-sm sm:text-base font-bold text-issca-navy">
-                  Quelle session souhaitez-vous intégrer&nbsp;?{" "}
+                  Pour quelle année universitaire candidatez-vous&nbsp;?{" "}
                   <span className="text-issca-red">*</span>
                 </legend>
                 <div className="mt-3 space-y-3">

@@ -110,7 +110,7 @@ export const ISSCA_INSTITUTION = {
 
 export function buildAdmissionsWhatsAppUrl(customMessage?: string): string {
   const defaultMsg =
-    "Bonjour ISSCA Business School, je souhaite obtenir des informations concernant le Master Professionnel en Management des Startups et de l'Intelligence Artificielle (session clôture 28 novembre 2026).";
+    "Bonjour ISSCA Business School, je souhaite obtenir des informations concernant le Master Professionnel en Management des Startups et de l'Intelligence Artificielle (année universitaire 2026/2027).";
   const text = encodeURIComponent(customMessage || defaultMsg);
   return `https://wa.me/${ISSCA_INSTITUTION.whatsappNumberE164}?text=${text}`;
 }

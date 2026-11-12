@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AnalyticsScripts } from "@/components/AnalyticsScripts";
-import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ISSCA_INSTITUTION } from "@/content/program";
 
 export const viewport: Viewport = {
@@ -18,7 +17,7 @@ export const metadata: Metadata = {
     template: "%s | ISSCA Business School",
   },
   description:
-    "Candidatez au Master Professionnel en Management des Startups et de l’Intelligence Artificielle (Bac+5, 2 ans) à ISSCA Business School Sousse. Clôture des inscriptions : 28 novembre 2026.",
+    "Candidatez au Master Professionnel en Management des Startups et de l’Intelligence Artificielle (Bac+5, 2 ans) à ISSCA Business School Sousse. Année universitaire 2026/2027 — Inscriptions ouvertes jusqu’au 28 novembre.",
   alternates: {
     canonical: "https://join.issca.tn/",
   },
@@ -30,7 +29,7 @@ export const metadata: Metadata = {
     title:
       "Master Professionnel en Management des Startups et de l’Intelligence Artificielle — ISSCA Business School",
     description:
-      "Développez les compétences pour piloter des projets innovants, manager des startups et intégrer l’IA dans les décisions d’entreprise. Inscriptions ouvertes jusqu’au 28 novembre 2026.",
+      "Développez les compétences pour piloter des projets innovants, manager des startups et intégrer l’IA dans les décisions d’entreprise. Année universitaire 2026/2027 — Inscriptions ouvertes jusqu’au 28 novembre.",
     images: [
       {
         url: "/images/campus/hero-campus.svg",
@@ -44,7 +43,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Master Management des Startups et de l’IA | ISSCA Business School",
     description:
-      "Formation Bac+5 en 4 semestres à Sousse. Clôture des inscriptions : 28 novembre 2026.",
+      "Formation Bac+5 en 4 semestres à Sousse. Année universitaire 2026/2027 — Inscriptions ouvertes jusqu’au 28 novembre.",
   },
   icons: {
     icon: "/icon.svg",
@@ -109,7 +108,6 @@ export default function RootLayout({
           Aller au contenu principal
         </a>
         {children}
-        <CookieConsentBanner />
         <AnalyticsScripts />
       </body>
     </html>
