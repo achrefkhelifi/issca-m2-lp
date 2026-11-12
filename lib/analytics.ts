@@ -184,10 +184,15 @@ export function trackProgramView(): void {
 export function trackCtaClick(ctaLocation: string, ctaLabel: string): void {
   if (typeof window === "undefined") return;
 
-  pushGtmAndGtag("select_promotion", {
+  const payload = {
     promotion_id: ctaLocation,
     promotion_name: ctaLabel,
-  });
+  };
+  pushGtmAndGtag("select_promotion", payload);
+
+  if (typeof window.fbq === "function") {
+    window.fbq("trackCustom", "cta_click", payload);
+  }
 }
 
 export function trackFormStart(): void {
@@ -195,10 +200,16 @@ export function trackFormStart(): void {
   if (hasEventFired("form_start_candidature")) return;
   markEventFired("form_start_candidature");
 
-  pushGtmAndGtag("form_start", {
+  const payload = {
     form_id: "issca_candidature_master_ia",
     form_name: "Pré-candidature Master Startups & IA",
-  });
+    type: "inscription",
+  };
+  pushGtmAndGtag("form_start", payload);
+
+  if (typeof window.fbq === "function") {
+    window.fbq("trackCustom", "form_start", payload);
+  }
 }
 
 export function trackFormStep(stepNumber: number, stepName: string): void {
@@ -208,11 +219,18 @@ export function trackFormStep(stepNumber: number, stepName: string): void {
   if (hasEventFired(key)) return;
   markEventFired(key);
 
-  pushGtmAndGtag("form_step_complete", {
+  const payload = {
     form_id: "issca_candidature_master_ia",
+    step: stepNumber,
     step_number: stepNumber,
     step_name: stepName,
-  });
+  };
+  pushGtmAndGtag("form_step", payload);
+  pushGtmAndGtag("form_step_complete", payload);
+
+  if (typeof window.fbq === "function") {
+    window.fbq("trackCustom", "form_step", payload);
+  }
 }
 
 export function trackConfirmedLead(params: {
@@ -228,15 +246,19 @@ export function trackConfirmedLead(params: {
   if (hasEventFired(dedupKey)) return;
   markEventFired(dedupKey);
 
-  pushGtmAndGtag("generate_lead", {
+  const leadPayload = {
     event_id: params.eventId,
     submission_id: params.submissionId,
     degree_level: params.degreeLevel,
     desired_intake: params.desiredIntake,
     readiness: params.readiness,
+    type: "inscription",
     currency: "TND",
     value: 1,
-  });
+  };
+
+  pushGtmAndGtag("form_submit", leadPayload);
+  pushGtmAndGtag("generate_lead", leadPayload);
 
   if (typeof window.fbq === "function") {
     window.fbq(
@@ -246,6 +268,7 @@ export function trackConfirmedLead(params: {
         content_name: PROGRAM_NAME,
         content_category: "Master Professionnel",
         content_ids: [PROGRAM_ID],
+        degree_level: params.degreeLevel,
         status: params.readiness,
       },
       { eventID: params.eventId }
