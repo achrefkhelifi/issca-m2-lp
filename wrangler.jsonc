@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "issca-join",
+  "name": "join-issca",
   "compatibility_date": "2026-08-30",
   "main": "./worker/index.ts",
   "assets": {

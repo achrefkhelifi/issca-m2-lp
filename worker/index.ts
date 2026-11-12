@@ -70,6 +70,7 @@ function isAllowedOrigin(request: Request, env: Env): boolean {
       host === "issca.tn" ||
       host.endsWith(".issca.tn") ||
       host.endsWith(".workers.dev") ||
+      host.endsWith(".pages.dev") ||
       host === "localhost" ||
       host === "127.0.0.1"
     ) {
@@ -510,12 +511,15 @@ async function handleLeadSubmission(request: Request, env: Env): Promise<Respons
 
   let n8nSucceeded = false;
   let resendSucceeded = false;
-  const hasN8nConfigured = Boolean(env.N8N_WEBHOOK_URL && env.N8N_WEBHOOK_URL.trim());
+  const n8nWebhookUrl = (
+    env.N8N_WEBHOOK_URL || "https://ops.truescaling.tn/webhook/issca-inscription"
+  ).trim();
+  const hasN8nConfigured = Boolean(n8nWebhookUrl);
   const hasResendConfigured = Boolean(env.RESEND_API_KEY && env.RESEND_API_KEY.trim());
 
-  if (hasN8nConfigured && env.N8N_WEBHOOK_URL) {
+  if (hasN8nConfigured) {
     const n8nResult = await postToN8nWithRetry(
-      env.N8N_WEBHOOK_URL.trim(),
+      n8nWebhookUrl,
       env.N8N_WEBHOOK_SECRET,
       data.idempotencyKey,
       webhookPayload
@@ -593,13 +597,14 @@ async function handleLeadSubmission(request: Request, env: Env): Promise<Respons
   });
 
   // Fire server-side Meta Conversions API (Lead) when consented and configured
+  const metaPixelId = (env.META_PIXEL_ID || "2467178294109259").trim();
   if (
     (data.analyticsConsent || data.marketingConsent) &&
-    env.META_PIXEL_ID &&
+    metaPixelId &&
     env.META_CAPI_ACCESS_TOKEN
   ) {
     await sendMetaCapiLeadEvent({
-      pixelId: env.META_PIXEL_ID,
+      pixelId: metaPixelId,
       accessToken: env.META_CAPI_ACCESS_TOKEN,
       testEventCode: env.META_TEST_EVENT_CODE,
       eventId: data.eventId,
