@@ -98,14 +98,14 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right Column: Clean Visual Frame */}
-          <div>
+          {/* Right Column: Official Visual Frame */}
+          <div className="mx-auto w-full max-w-[460px] lg:max-w-none">
             <div className="relative rounded-3xl overflow-hidden bg-issca-navy shadow-elevated border border-slate-200/80">
               <img
-                src="/images/campus/hero-campus.svg"
-                alt="Campus ISSCA Business School à Sousse — Master Management des Startups et de l’IA"
-                width={800}
-                height={600}
+                src="/images/campus/hero-master-ia.jpg"
+                alt="ISSCA Business School — Master Professionnel en Management des startups et de l’IA, inscriptions jusqu’au 28 novembre"
+                width={819}
+                height={1024}
                 fetchPriority="high"
                 decoding="async"
                 className="w-full h-auto block"

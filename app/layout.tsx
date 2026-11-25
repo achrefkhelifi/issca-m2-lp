@@ -32,9 +32,9 @@ export const metadata: Metadata = {
       "Développez les compétences pour piloter des projets innovants, manager des startups et intégrer l’IA dans les décisions d’entreprise. Année universitaire 2026/2027 — Inscriptions ouvertes jusqu’au 28 novembre.",
     images: [
       {
-        url: "/images/campus/hero-campus.svg",
-        width: 800,
-        height: 600,
+        url: "/images/campus/hero-master-ia.jpg",
+        width: 819,
+        height: 1024,
         alt: "ISSCA Business School Sousse — Master Management des Startups et de l’IA",
       },
     ],
